@@ -3,12 +3,12 @@ package mx.sugus.yang0;
 public class BinaryExpression implements SyntaxNode {
 
   private final SyntaxNode left;
-  private final Token operand;
+  private final Token operator;
   private final SyntaxNode right;
 
-  public BinaryExpression(SyntaxNode left, Token operand, SyntaxNode right) {
+  public BinaryExpression(SyntaxNode left, Token operator, SyntaxNode right) {
     this.left = left;
-    this.operand = operand;
+    this.operator = operator;
     this.right = right;
   }
 
@@ -25,12 +25,12 @@ public class BinaryExpression implements SyntaxNode {
     return right;
   }
 
-  public Token getOperand() {
-    return operand;
+  public Token getOperator() {
+    return operator;
   }
 
   @Override
   public String toString() {
-    return "(" + operand.toString() + " " + left.toString() + " " + right.toString() + ")";
+    return "(" + operator.toString() + " " + left.toString() + " " + right.toString() + ")";
   }
 }

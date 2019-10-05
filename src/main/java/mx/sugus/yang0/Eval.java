@@ -13,7 +13,7 @@ public class Eval {
       BinaryExpression expr = (BinaryExpression) node;
       long left = eval(expr.getLeft());
       long right = eval(expr.getRight());
-      switch (expr.getOperand().getKind()) {
+      switch (expr.getOperator().getKind()) {
         case PlusToken:
           return left + right;
         case MinusToken:
@@ -23,7 +23,7 @@ public class Eval {
         case SlashToken:
           return left / right;
         default:
-          throw new IllegalStateException("unexpected operand: " + expr.getOperand());
+          throw new IllegalStateException("unexpected operand: " + expr.getOperator());
       }
     }
 
