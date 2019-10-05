@@ -1,5 +1,7 @@
 package mx.sugus.yang0;
 
+import static mx.sugus.yang0.SyntaxFacts.getOperatorPriority;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,37 +24,25 @@ public class Parser {
     } while (token.getKind() != SyntaxKind.Eof);
   }
 
+
+
   public Expression parseExpression() {
-    return parseAdditiveExpression();
+    return parseExpression(0);
   }
 
-  private Expression parseAdditiveExpression() {
-    var node = parseMultiplicativeExpression();
-    Token token;
-    while (true) {
-      token = peek();
-      var kind = token.getKind();
-      if (kind != SyntaxKind.PlusToken && kind != SyntaxKind.MinusToken) {
-        break;
-      }
-      ++position;
-      node = new BinaryExpression(node, token, parseExpression());
-    }
-    return node;
-  }
-
-  private Expression parseMultiplicativeExpression() {
+  private Expression parseExpression(int parentPrecedence) {
     var node = parsePrimary();
-    Token token;
+
     while (true) {
-      token = peek();
-      var kind = token.getKind();
-      if (kind != SyntaxKind.StartToken && kind != SyntaxKind.SlashToken) {
+      var token = peek();
+      int precedence = getOperatorPriority(token);
+      if (precedence == 0 || precedence <= parentPrecedence) {
         break;
       }
       ++position;
-      node = new BinaryExpression(node, token, parseExpression());
+      node = new BinaryExpression(node, token, parseExpression(precedence));
     }
+
     return node;
   }
 
