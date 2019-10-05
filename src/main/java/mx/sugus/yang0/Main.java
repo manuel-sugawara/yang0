@@ -9,19 +9,19 @@ import java.io.InputStreamReader;
 public class Main {
 
   public static void main(String[] args) throws java.io.IOException {
-    BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
+    var in = new BufferedReader(new InputStreamReader(System.in));
 
     while (true) {
       System.out.print("> ");
       System.out.flush();
-      String line = buffer.readLine();
+      var line = in.readLine();
       if (line == null || line.length() == 0) {
         System.out.println("Bye!");
         break;
       } else {
-        Parser parser = new Parser(line);
+        var parser = new Parser(line);
         System.out.println("parser: " + parser.toString());
-        SyntaxNode expr = parser.parseExpression();
+        var expr = parser.parseExpression();
         System.out.println("Expression: " + expr);
         System.out.println("Result: " + eval(expr));
       }

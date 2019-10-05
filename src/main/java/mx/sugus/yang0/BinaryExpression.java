@@ -1,6 +1,6 @@
 package mx.sugus.yang0;
 
-public class BinaryExpression implements SyntaxNode {
+public class BinaryExpression implements Expression {
 
   private final SyntaxNode left;
   private final Token operator;

@@ -33,6 +33,10 @@ public class Token {
     return value;
   }
 
+  public int getPosition() {
+    return position;
+  }
+
   public String toString() {
     return String.format("%s:%s [%s]", kind, position, src);
   }

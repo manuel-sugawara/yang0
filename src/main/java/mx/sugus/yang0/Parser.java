@@ -6,30 +6,32 @@ import java.util.List;
 public class Parser {
 
   private final List<Token> tokens;
+  private final Diagnostics diagnostics;
   private int position;
 
   public Parser(String src) {
     tokens = new ArrayList<>();
-    Lexer lexer = new Lexer(src);
+    diagnostics = new Diagnostics();
+    var lexer = new Lexer(src, diagnostics);
     Token token;
     do {
       token = lexer.next();
-      if (token.getKind() != SyntaxKind.Whitespace) {
+      if (token.getKind() != SyntaxKind.WhitespaceToken) {
         tokens.add(token);
       }
     } while (token.getKind() != SyntaxKind.Eof);
   }
 
-  public SyntaxNode parseExpression() {
+  public Expression parseExpression() {
     return parseAdditiveExpression();
   }
 
-  private SyntaxNode parseAdditiveExpression() {
-    SyntaxNode node = parseMultiplicativeExpression();
+  private Expression parseAdditiveExpression() {
+    var node = parseMultiplicativeExpression();
     Token token;
     while (true) {
       token = peek();
-      SyntaxKind kind = token.getKind();
+      var kind = token.getKind();
       if (kind != SyntaxKind.PlusToken && kind != SyntaxKind.MinusToken) {
         break;
       }
@@ -39,12 +41,12 @@ public class Parser {
     return node;
   }
 
-  private SyntaxNode parseMultiplicativeExpression() {
-    SyntaxNode node = parsePrimary();
+  private Expression parseMultiplicativeExpression() {
+    var node = parsePrimary();
     Token token;
     while (true) {
       token = peek();
-      SyntaxKind kind = token.getKind();
+      var kind = token.getKind();
       if (kind != SyntaxKind.StartToken && kind != SyntaxKind.SlashToken) {
         break;
       }
@@ -54,22 +56,24 @@ public class Parser {
     return node;
   }
 
-  private SyntaxNode parsePrimary() {
+  private Expression parsePrimary() {
     Token token = peek();
     if (token.getKind() == SyntaxKind.OpenParen) {
       ++position;
-      SyntaxNode node = parseExpression();
+      var node = parseExpression();
       token = peek();
-      if (token.getKind() != SyntaxKind.CloseParen) {}
+      if (token.getKind() != SyntaxKind.CloseParen) {
+        diagnostics.addError(token, "Expecting closing parenthesis");
+      }
       ++position;
-      return node;
+      return new ParentExpression(node);
     }
 
-    if (token.getKind() == SyntaxKind.LongLiteral) {
+    if (token.getKind() == SyntaxKind.LongToken) {
       ++position;
       return new LongExpression(token);
     }
-    return new ErrorNode("primary", token);
+    return new ErrorExpression("primary", token);
   }
 
   private Token peek() {

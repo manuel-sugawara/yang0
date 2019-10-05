@@ -1,6 +1,6 @@
 package mx.sugus.yang0;
 
-public class LongExpression implements SyntaxNode {
+public class LongExpression implements Expression {
 
   private final Token value;
 

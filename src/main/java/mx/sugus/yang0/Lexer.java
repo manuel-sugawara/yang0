@@ -3,71 +3,72 @@ package mx.sugus.yang0;
 public class Lexer {
 
   private final String src;
+  private final Diagnostics diagnostics;
   private int position;
 
-  public Lexer(String src) {
+  public Lexer(String src, Diagnostics diagnostics) {
     this.src = src;
+    this.diagnostics = diagnostics;
   }
 
-
   public Token next() {
-    char ch = peek();
+    var ch = peek();
     if (ch == 0) {
-      return new Token(SyntaxKind.Eof, position, "", null);
+      return new Token(SyntaxKind.Eof, position, "");
     }
 
-    int start = position;
-
+    var start = position;
     if (Character.isWhitespace(ch)) {
-      StringBuilder buf = new StringBuilder(ch);
-      position++;
+      var buf = new StringBuilder(ch);
+      ++position;
       while (Character.isWhitespace(ch = peek())) {
         buf.append(ch);
         ++position;
       }
-      String value = src.substring(start, position);
-      return new Token(SyntaxKind.Whitespace, start, value, value);
+      var value = src.substring(start, position);
+      return new Token(SyntaxKind.WhitespaceToken, start, value, value);
     }
 
     if (Character.isDigit(ch)) {
-      StringBuilder buf = new StringBuilder(ch);
-      position++;
+      var buf = new StringBuilder(ch);
+      ++position;
       while (Character.isDigit(ch = peek())) {
         buf.append(ch);
         ++position;
       }
-      String text = src.substring(start, position);
-      Long value = Long.parseLong(text);
-      return new Token(SyntaxKind.LongLiteral, start, text, value);
+      var text = src.substring(start, position);
+      try {
+        var value = Long.parseLong(text);
+        return new Token(SyntaxKind.LongToken, start, text, value);
+      } catch (NumberFormatException e) {
+        diagnostics.addError(start, "invalid long literal: \"" + text + "\": " + e.getMessage());
+        return new Token(SyntaxKind.ErrorToken, start, text);
+      }
     }
 
-    switch(ch) {
+    switch (ch) {
       case '+':
-        position++;
+        ++position;
         return new Token(SyntaxKind.PlusToken, start, "+");
       case '-':
-        position++;
+        ++position;
         return new Token(SyntaxKind.MinusToken, start, "-");
       case '*':
-        position++;
+        ++position;
         return new Token(SyntaxKind.StartToken, start, "*");
       case '/':
-        position++;
+        ++position;
         return new Token(SyntaxKind.SlashToken, start, "/");
       case '(':
-        position++;
+        ++position;
         return new Token(SyntaxKind.OpenParen, start, "(");
       case ')':
-        position++;
+        ++position;
         return new Token(SyntaxKind.CloseParen, start, ")");
     }
 
-    String text = src.substring(start, ++position);
-    return new Token(SyntaxKind.Error, start, text);
-  }
-
-  private boolean hasNext() {
-    return position + 1 < src.length();
+    var text = src.substring(start, ++position);
+    return new Token(SyntaxKind.ErrorToken, start, text);
   }
 
   private char peek() {
@@ -76,5 +77,4 @@ public class Lexer {
     }
     return src.charAt(position);
   }
-
 }
