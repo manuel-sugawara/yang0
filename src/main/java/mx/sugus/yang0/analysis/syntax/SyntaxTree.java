@@ -1,12 +1,12 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
 public class SyntaxTree {
 
   private final Diagnostics diagnostics;
   private final SyntaxNode root;
-  private final Token eofToken;
+  private final SyntaxToken eofToken;
 
-  public SyntaxTree(Diagnostics diagnostics, SyntaxNode root, Token eofToken) {
+  public SyntaxTree(Diagnostics diagnostics, SyntaxNode root, SyntaxToken eofToken) {
     this.diagnostics = diagnostics;
     this.root = root;
     this.eofToken = eofToken;
@@ -16,7 +16,7 @@ public class SyntaxTree {
     return root;
   }
 
-  public Token getEofToken() {
+  public SyntaxToken getEofToken() {
     return eofToken;
   }
 

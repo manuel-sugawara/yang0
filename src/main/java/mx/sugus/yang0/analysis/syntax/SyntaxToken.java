@@ -1,20 +1,20 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
-public class Token {
+public class SyntaxToken {
 
   private final SyntaxKind kind;
   private final int position;
   private final String src;
   private final Object value;
 
-  public Token(SyntaxKind kind, int position, String src, Object value) {
+  public SyntaxToken(SyntaxKind kind, int position, String src, Object value) {
     this.kind = kind;
     this.position = position;
     this.src = src;
     this.value = value;
   }
 
-  public Token(SyntaxKind kind, int position, String src) {
+  public SyntaxToken(SyntaxKind kind, int position, String src) {
     this.kind = kind;
     this.position = position;
     this.src = src;

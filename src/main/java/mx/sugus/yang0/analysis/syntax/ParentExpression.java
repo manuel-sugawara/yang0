@@ -1,12 +1,12 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
 public class ParentExpression implements Expression {
 
-  private final Token start;
+  private final SyntaxToken start;
   private final Expression expr;
-  private final Token end;
+  private final SyntaxToken end;
 
-  public ParentExpression(Token start, Expression expr, Token end) {
+  public ParentExpression(SyntaxToken start, Expression expr, SyntaxToken end) {
     this.start = start;
     this.expr = expr;
     this.end = end;

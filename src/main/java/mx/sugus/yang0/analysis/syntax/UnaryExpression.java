@@ -1,11 +1,11 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
 public class UnaryExpression implements Expression {
 
-  private final Token operator;
+  private final SyntaxToken operator;
   private final Expression operand;
 
-  public UnaryExpression(Token operator, Expression operand) {
+  public UnaryExpression(SyntaxToken operator, Expression operand) {
     this.operator = operator;
     this.operand = operand;
   }
@@ -15,7 +15,7 @@ public class UnaryExpression implements Expression {
     return SyntaxKind.UnaryExpression;
   }
 
-  public Token getOperator() {
+  public SyntaxToken getOperator() {
     return operator;
   }
 

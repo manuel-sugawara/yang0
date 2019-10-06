@@ -1,4 +1,4 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
 public enum SyntaxKind {
   // Misc
@@ -10,6 +10,7 @@ public enum SyntaxKind {
 
   // Literals
   LongToken,
+  LiteralToken,
 
   // Operators
   PlusToken,
@@ -23,5 +24,5 @@ public enum SyntaxKind {
   BinaryExpression,
   LongExpression,
   ParentExpression,
-  UnaryExpression,
+  UnaryExpression, LiteralExpression,
 }

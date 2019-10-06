@@ -4,6 +4,9 @@ import static mx.sugus.yang0.Eval.eval;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import mx.sugus.yang0.analysis.binding.Binder;
+import mx.sugus.yang0.analysis.syntax.Expression;
+import mx.sugus.yang0.analysis.syntax.Parser;
 
 /** Starting point for the Yang0 REPL */
 public class Main {
@@ -21,8 +24,10 @@ public class Main {
       } else {
         var parser = new Parser(line);
         var tree = parser.parse();
+        var binder = new Binder(parser.getDiagnostics());
+        var boundExpression = binder.bindExpression((Expression) tree.getRoot());
         System.out.println("Expression: " + tree.getRoot());
-        System.out.println("Result: " + eval(tree.getRoot()));
+        System.out.println("Result: " + eval(boundExpression));
       }
     }
   }

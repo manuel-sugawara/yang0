@@ -1,12 +1,12 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
 public class BinaryExpression implements Expression {
 
-  private final SyntaxNode left;
-  private final Token operator;
-  private final SyntaxNode right;
+  private final Expression left;
+  private final SyntaxToken operator;
+  private final Expression right;
 
-  public BinaryExpression(SyntaxNode left, Token operator, SyntaxNode right) {
+  public BinaryExpression(Expression left, SyntaxToken operator, Expression right) {
     this.left = left;
     this.operator = operator;
     this.right = right;
@@ -17,15 +17,15 @@ public class BinaryExpression implements Expression {
     return SyntaxKind.BinaryExpression;
   }
 
-  public SyntaxNode getLeft() {
+  public Expression getLeft() {
     return left;
   }
 
-  public SyntaxNode getRight() {
+  public Expression getRight() {
     return right;
   }
 
-  public Token getOperator() {
+  public SyntaxToken getOperator() {
     return operator;
   }
 

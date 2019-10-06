@@ -1,14 +1,14 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
-import static mx.sugus.yang0.SyntaxFacts.getBinaryOperatorPriority;
-import static mx.sugus.yang0.SyntaxFacts.getUnaryOperatorPriority;
+import static mx.sugus.yang0.analysis.syntax.SyntaxFacts.getBinaryOperatorPriority;
+import static mx.sugus.yang0.analysis.syntax.SyntaxFacts.getUnaryOperatorPriority;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
 
-  private final List<Token> tokens;
+  private final List<SyntaxToken> tokens;
   private final Diagnostics diagnostics;
   private int position;
 
@@ -16,7 +16,7 @@ public class Parser {
     tokens = new ArrayList<>();
     diagnostics = new Diagnostics();
     var lexer = new Lexer(src, diagnostics);
-    Token token;
+    SyntaxToken token;
     do {
       token = lexer.next();
       if (token.getKind() != SyntaxKind.WhitespaceToken) {
@@ -25,9 +25,13 @@ public class Parser {
     } while (token.getKind() != SyntaxKind.EofToken);
   }
 
+  public Diagnostics getDiagnostics() {
+    return diagnostics;
+  }
+
   public SyntaxTree parse() {
     Expression expression = parseExpression(0);
-    Token token = match(SyntaxKind.EofToken);
+    SyntaxToken token = match(SyntaxKind.EofToken);
     return new SyntaxTree(diagnostics, expression, token);
   }
 
@@ -63,12 +67,12 @@ public class Parser {
 
     if (token.getKind() == SyntaxKind.LongToken) {
       ++position;
-      return new LongExpression(token);
+      return new LiteralExpression(token);
     }
     return new ErrorExpression("primary", token);
   }
 
-  private Token next() {
+  private SyntaxToken next() {
     int size = tokens.size();
     if (position >= size) {
       return tokens.get(size - 1);
@@ -76,7 +80,7 @@ public class Parser {
     return tokens.get(position++);
   }
 
-  private Token peek() {
+  private SyntaxToken peek() {
     int size = tokens.size();
     if (position >= size) {
       return tokens.get(size - 1);
@@ -84,12 +88,11 @@ public class Parser {
     return tokens.get(position);
   }
 
-  private Token match(SyntaxKind kind) {
-    Token token = peek();
-    position++;
+  private SyntaxToken match(SyntaxKind kind) {
+    SyntaxToken token = next();
     if (token.getKind() != kind) {
       diagnostics.addError(token, "expecting token kind: " + kind);
-      return new Token(kind, -1, null);
+      return new SyntaxToken(kind, -1, null);
     }
     return token;
   }

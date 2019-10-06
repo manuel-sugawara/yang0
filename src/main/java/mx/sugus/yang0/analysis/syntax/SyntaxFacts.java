@@ -1,8 +1,8 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
 public class SyntaxFacts {
 
-  public static int getUnaryOperatorPriority(Token token) {
+  public static int getUnaryOperatorPriority(SyntaxToken token) {
     switch (token.getKind()) {
       case PlusToken:
       case MinusToken:
@@ -14,7 +14,7 @@ public class SyntaxFacts {
   }
 
 
-  public static int getBinaryOperatorPriority(Token token) {
+  public static int getBinaryOperatorPriority(SyntaxToken token) {
     switch (token.getKind()) {
       case StartToken:
       case SlashToken:

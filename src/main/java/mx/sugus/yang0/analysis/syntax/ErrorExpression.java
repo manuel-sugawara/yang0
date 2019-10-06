@@ -1,11 +1,11 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
 public class ErrorExpression implements Expression {
 
   private final String expecting;
-  private final Token got;
+  private final SyntaxToken got;
 
-  public ErrorExpression(String expecting, Token got) {
+  public ErrorExpression(String expecting, SyntaxToken got) {
     this.expecting = expecting;
     this.got = got;
   }

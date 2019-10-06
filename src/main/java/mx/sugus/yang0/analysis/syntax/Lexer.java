@@ -1,4 +1,4 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.syntax;
 
 public class Lexer {
 
@@ -11,10 +11,10 @@ public class Lexer {
     this.diagnostics = diagnostics;
   }
 
-  public Token next() {
+  public SyntaxToken next() {
     var ch = peek();
     if (ch == 0) {
-      return new Token(SyntaxKind.EofToken, position, "");
+      return new SyntaxToken(SyntaxKind.EofToken, position, "");
     }
 
     var start = position;
@@ -26,7 +26,7 @@ public class Lexer {
         ++position;
       }
       var value = src.substring(start, position);
-      return new Token(SyntaxKind.WhitespaceToken, start, value, value);
+      return new SyntaxToken(SyntaxKind.WhitespaceToken, start, value, value);
     }
 
     if (Character.isDigit(ch)) {
@@ -39,36 +39,36 @@ public class Lexer {
       var text = src.substring(start, position);
       try {
         var value = Long.parseLong(text);
-        return new Token(SyntaxKind.LongToken, start, text, value);
+        return new SyntaxToken(SyntaxKind.LongToken, start, text, value);
       } catch (NumberFormatException e) {
         diagnostics.addError(start, "invalid long literal: \"" + text + "\": " + e.getMessage());
-        return new Token(SyntaxKind.ErrorToken, start, text);
+        return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
       }
     }
 
     switch (ch) {
       case '+':
         ++position;
-        return new Token(SyntaxKind.PlusToken, start, "+");
+        return new SyntaxToken(SyntaxKind.PlusToken, start, "+");
       case '-':
         ++position;
-        return new Token(SyntaxKind.MinusToken, start, "-");
+        return new SyntaxToken(SyntaxKind.MinusToken, start, "-");
       case '*':
         ++position;
-        return new Token(SyntaxKind.StartToken, start, "*");
+        return new SyntaxToken(SyntaxKind.StartToken, start, "*");
       case '/':
         ++position;
-        return new Token(SyntaxKind.SlashToken, start, "/");
+        return new SyntaxToken(SyntaxKind.SlashToken, start, "/");
       case '(':
         ++position;
-        return new Token(SyntaxKind.OpenParenToken, start, "(");
+        return new SyntaxToken(SyntaxKind.OpenParenToken, start, "(");
       case ')':
         ++position;
-        return new Token(SyntaxKind.CloseParenToken, start, ")");
+        return new SyntaxToken(SyntaxKind.CloseParenToken, start, ")");
     }
 
     var text = src.substring(start, ++position);
-    return new Token(SyntaxKind.ErrorToken, start, text);
+    return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
   }
 
   private char peek() {
