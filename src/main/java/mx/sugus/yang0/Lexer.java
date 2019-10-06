@@ -14,7 +14,7 @@ public class Lexer {
   public Token next() {
     var ch = peek();
     if (ch == 0) {
-      return new Token(SyntaxKind.Eof, position, "");
+      return new Token(SyntaxKind.EofToken, position, "");
     }
 
     var start = position;
@@ -61,10 +61,10 @@ public class Lexer {
         return new Token(SyntaxKind.SlashToken, start, "/");
       case '(':
         ++position;
-        return new Token(SyntaxKind.OpenParen, start, "(");
+        return new Token(SyntaxKind.OpenParenToken, start, "(");
       case ')':
         ++position;
-        return new Token(SyntaxKind.CloseParen, start, ")");
+        return new Token(SyntaxKind.CloseParenToken, start, ")");
     }
 
     var text = src.substring(start, ++position);

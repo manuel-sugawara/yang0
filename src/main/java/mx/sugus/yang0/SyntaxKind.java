@@ -2,26 +2,26 @@ package mx.sugus.yang0;
 
 public enum SyntaxKind {
   // Misc
-  Eof,
+  EofToken,
   ErrorToken,
 
-  // WhitespaceToken
+  // Whitespace
   WhitespaceToken,
 
   // Literals
   LongToken,
-  DoubleToken,
 
   // Operators
   PlusToken,
   MinusToken,
   SlashToken,
   StartToken,
+  OpenParenToken,
+  CloseParenToken,
 
   // Syntax
   BinaryExpression,
   LongExpression,
-  OpenParen,
-  CloseParen,
   ParentExpression,
+  UnaryExpression,
 }

@@ -1,6 +1,7 @@
 package mx.sugus.yang0;
 
-import static mx.sugus.yang0.SyntaxFacts.getOperatorPriority;
+import static mx.sugus.yang0.SyntaxFacts.getBinaryOperatorPriority;
+import static mx.sugus.yang0.SyntaxFacts.getUnaryOperatorPriority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,42 +22,43 @@ public class Parser {
       if (token.getKind() != SyntaxKind.WhitespaceToken) {
         tokens.add(token);
       }
-    } while (token.getKind() != SyntaxKind.Eof);
+    } while (token.getKind() != SyntaxKind.EofToken);
   }
 
-
-
-  public Expression parseExpression() {
-    return parseExpression(0);
+  public SyntaxTree parse() {
+    Expression expression = parseExpression(0);
+    Token token = match(SyntaxKind.EofToken);
+    return new SyntaxTree(diagnostics, expression, token);
   }
 
   private Expression parseExpression(int parentPrecedence) {
-    var node = parsePrimary();
+    Expression left;
+    int unaryOperatorPrecedence = getUnaryOperatorPriority(peek());
+    if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence > parentPrecedence) {
+      var operator = next();
+      var operand = parsePrimary();
+      left = new UnaryExpression(operator, operand);
+    } else {
+      left = parsePrimary();
+    }
 
     while (true) {
-      var token = peek();
-      int precedence = getOperatorPriority(token);
+      int precedence = getBinaryOperatorPriority(peek());
       if (precedence == 0 || precedence <= parentPrecedence) {
         break;
       }
-      ++position;
-      node = new BinaryExpression(node, token, parseExpression(precedence));
+      left = new BinaryExpression(left, next(), parseExpression(precedence));
     }
-
-    return node;
+    return left;
   }
 
   private Expression parsePrimary() {
-    Token token = peek();
-    if (token.getKind() == SyntaxKind.OpenParen) {
-      ++position;
-      var node = parseExpression();
-      token = peek();
-      if (token.getKind() != SyntaxKind.CloseParen) {
-        diagnostics.addError(token, "Expecting closing parenthesis");
-      }
-      ++position;
-      return new ParentExpression(node);
+    var token = peek();
+    if (token.getKind() == SyntaxKind.OpenParenToken) {
+      var start = next();
+      var node = parseExpression(0);
+      var end = match(SyntaxKind.CloseParenToken);
+      return new ParentExpression(start, node, end);
     }
 
     if (token.getKind() == SyntaxKind.LongToken) {
@@ -66,12 +68,30 @@ public class Parser {
     return new ErrorExpression("primary", token);
   }
 
+  private Token next() {
+    int size = tokens.size();
+    if (position >= size) {
+      return tokens.get(size - 1);
+    }
+    return tokens.get(position++);
+  }
+
   private Token peek() {
     int size = tokens.size();
     if (position >= size) {
       return tokens.get(size - 1);
     }
     return tokens.get(position);
+  }
+
+  private Token match(SyntaxKind kind) {
+    Token token = peek();
+    position++;
+    if (token.getKind() != kind) {
+      diagnostics.addError(token, "expecting token kind: " + kind);
+      return new Token(kind, -1, null);
+    }
+    return token;
   }
 
   @Override

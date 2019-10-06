@@ -20,10 +20,9 @@ public class Main {
         break;
       } else {
         var parser = new Parser(line);
-        System.out.println("parser: " + parser.toString());
-        var expr = parser.parseExpression();
-        System.out.println("Expression: " + expr);
-        System.out.println("Result: " + eval(expr));
+        var tree = parser.parse();
+        System.out.println("Expression: " + tree.getRoot());
+        System.out.println("Result: " + eval(tree.getRoot()));
       }
     }
   }
