@@ -24,5 +24,5 @@ public enum SyntaxKind {
   BinaryExpression,
   LongExpression,
   ParentExpression,
-  UnaryExpression, LiteralExpression,
+  UnaryExpression, LiteralExpression, TrueKeyword, FalseKeyword, Identifier,
 }

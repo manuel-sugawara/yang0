@@ -16,18 +16,18 @@ public class Eval {
 
   public Eval() {}
 
-  public static long eval(BoundExpression node) {
+  public static Object eval(BoundExpression node) {
     var kind = node.getKind();
 
     if (kind == BoundNodeKind.LiteralExpression) {
       var expr = (BoundLiteralExpression) node;
-      return (long) expr.getValue();
+      return expr.getValue();
     }
 
     if (kind == BoundNodeKind.BinaryExpression) {
       var expr = (BoundBinaryExpression) node;
-      var left = eval(expr.getLeft());
-      var right = eval(expr.getRight());
+      var left = (long) eval(expr.getLeft());
+      var right = (long) eval(expr.getRight());
       switch (expr.getOperatorKind()) {
         case Addition:
           return left + right;
@@ -44,7 +44,7 @@ public class Eval {
 
     if (kind == BoundNodeKind.UnaryExpression) {
       var expr = (BoundUnaryExpression) node;
-      var operand = eval(expr.getOperand());
+      var operand = (long) eval(expr.getOperand());
       switch (expr.getOperatorKind()) {
         case Identity:
           return operand;

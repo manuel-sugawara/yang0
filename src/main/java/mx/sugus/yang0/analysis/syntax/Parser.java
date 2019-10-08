@@ -69,6 +69,17 @@ public class Parser {
       ++position;
       return new LiteralExpression(token);
     }
+
+    if (token.getKind() == SyntaxKind.TrueKeyword) {
+      ++position;
+      return new LiteralExpression(token);
+    }
+
+    if (token.getKind() == SyntaxKind.FalseKeyword) {
+      ++position;
+      return new LiteralExpression(token);
+    }
+
     return new ErrorExpression("primary", token);
   }
 

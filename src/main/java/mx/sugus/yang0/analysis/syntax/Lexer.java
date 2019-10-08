@@ -46,6 +46,28 @@ public class Lexer {
       }
     }
 
+    if (Character.isJavaIdentifierStart(ch)) {
+      var buf = new StringBuilder(ch);
+      ++position;
+      while (true) {
+        ch = peek();
+        if (ch == 0 || !Character.isJavaIdentifierPart(ch)) {
+          break;
+        }
+        buf.append(ch);
+        ++position;
+      }
+      var text = src.substring(start, position);
+      switch (text) {
+        case "true":
+          return new SyntaxToken(SyntaxKind.TrueKeyword, start, text, Boolean.TRUE);
+        case "false":
+          return new SyntaxToken(SyntaxKind.FalseKeyword, start, text, Boolean.FALSE);
+        default:
+          return new SyntaxToken(SyntaxKind.Identifier, start, text);
+      }
+    }
+
     switch (ch) {
       case '+':
         ++position;
