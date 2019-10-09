@@ -5,8 +5,8 @@ public class BoundUnaryExpression implements BoundExpression {
   private final BoundUnaryOperatorKind operatorKind;
   private final BoundExpression operand;
 
-  public BoundUnaryExpression(BoundUnaryOperatorKind operatorKind,
-      BoundExpression operand) {
+  public BoundUnaryExpression(
+      BoundUnaryOperatorKind operatorKind, BoundExpression operand) {
     this.operatorKind = operatorKind;
     this.operand = operand;
   }
@@ -21,7 +21,7 @@ public class BoundUnaryExpression implements BoundExpression {
 
   @Override
   public Class getType() {
-    return operand.getType();
+    return operatorKind.getReturnType();
   }
 
   @Override

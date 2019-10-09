@@ -13,7 +13,15 @@ public class Diagnostics {
     errors.add(String.format("At: %s, %s", token.getPosition(), error));
   }
 
-  public void addError(int position, String error) {
-    errors.add(String.format("At: %s, %s", position, error));
+  public List<String> getErrors() {
+    return errors;
+  }
+
+  public void addError(int position, String fmt, Object... args) {
+    errors.add(String.format("At: %s, %s", position, String.format(fmt, args)));
+  }
+
+  public boolean hasErrors() {
+    return !errors.isEmpty();
   }
 }

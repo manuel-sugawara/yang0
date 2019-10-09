@@ -4,6 +4,8 @@ import static mx.sugus.yang0.Eval.eval;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.stream.Collectors;
+import mx.sugus.yang0.analysis.Compilation;
 import mx.sugus.yang0.analysis.binding.Binder;
 import mx.sugus.yang0.analysis.syntax.Expression;
 import mx.sugus.yang0.analysis.syntax.Parser;
@@ -26,8 +28,14 @@ public class Main {
         var tree = parser.parse();
         var binder = new Binder(parser.getDiagnostics());
         var boundExpression = binder.bindExpression((Expression) tree.getRoot());
-        System.out.println("Expression: " + tree.getRoot());
-        System.out.println("Result: " + eval(boundExpression));
+        var compilation = new Compilation(binder.getDiagnostics(), boundExpression);
+        if (compilation.getDiagnostics().hasErrors()) {
+          System.out.printf(
+              "Errors while parsing input:\n %s\n",
+              compilation.getDiagnostics().getErrors().stream().collect(Collectors.joining("\n")));
+        } else {
+          System.out.println("Result: " + eval(compilation));
+        }
       }
     }
   }

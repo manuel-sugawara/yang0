@@ -1,20 +1,19 @@
 package mx.sugus.yang0;
 
+import mx.sugus.yang0.analysis.Compilation;
 import mx.sugus.yang0.analysis.binding.BoundBinaryExpression;
 import mx.sugus.yang0.analysis.binding.BoundExpression;
 import mx.sugus.yang0.analysis.binding.BoundLiteralExpression;
 import mx.sugus.yang0.analysis.binding.BoundNodeKind;
 import mx.sugus.yang0.analysis.binding.BoundUnaryExpression;
-import mx.sugus.yang0.analysis.syntax.BinaryExpression;
-import mx.sugus.yang0.analysis.syntax.LiteralExpression;
-import mx.sugus.yang0.analysis.syntax.ParentExpression;
-import mx.sugus.yang0.analysis.syntax.SyntaxKind;
-import mx.sugus.yang0.analysis.syntax.SyntaxNode;
-import mx.sugus.yang0.analysis.syntax.UnaryExpression;
 
 public class Eval {
 
   public Eval() {}
+
+  public static Object eval(Compilation compilation) {
+    return eval(compilation.getExpression());
+  }
 
   public static Object eval(BoundExpression node) {
     var kind = node.getKind();
@@ -31,7 +30,7 @@ public class Eval {
       switch (expr.getOperatorKind()) {
         case Addition:
           return left + right;
-        case Substraction:
+        case Subtraction:
           return left - right;
         case Multiplication:
           return left * right;

@@ -5,7 +5,7 @@ import mx.sugus.yang0.analysis.syntax.Diagnostics;
 import mx.sugus.yang0.analysis.syntax.Expression;
 import mx.sugus.yang0.analysis.syntax.LiteralExpression;
 import mx.sugus.yang0.analysis.syntax.ParentExpression;
-import mx.sugus.yang0.analysis.syntax.SyntaxKind;
+import mx.sugus.yang0.analysis.syntax.SyntaxToken;
 import mx.sugus.yang0.analysis.syntax.UnaryExpression;
 
 public class Binder {
@@ -14,6 +14,10 @@ public class Binder {
 
   public Binder(Diagnostics diagnostics) {
     this.diagnostics = diagnostics;
+  }
+
+  public Diagnostics getDiagnostics() {
+    return diagnostics;
   }
 
   public BoundExpression bindExpression(Expression syntax) {
@@ -37,65 +41,57 @@ public class Binder {
 
   private BoundExpression bindUnaryExpression(UnaryExpression syntax) {
     var boundOperand = bindExpression(syntax.getOperand());
-    var kind = bindUnaryOperatorKind(syntax.getKind(), boundOperand.getType());
+    var type = boundOperand.getType();
+    var token = syntax.getOperator();
+    var kind = bindUnaryOperatorKind(token, type);
+
     if (kind == null) {
       diagnostics.addError(
-          syntax.getOperator().getPosition(),
-          "Unary operator '"
-              + syntax.getOperator().getSrc()
-              + "' is not defined for type: '"
-              + boundOperand.getType()
-              + "'");
+          token.getPosition(),
+          "cannot find unary operator '%s' for type '%s'",
+          token.getSrc(),
+          type);
       return boundOperand;
     }
     return new BoundUnaryExpression(kind, boundOperand);
   }
 
-  private BoundUnaryOperatorKind bindUnaryOperatorKind(SyntaxKind kind, Class type) {
-    if (type != Long.class) {
-      return null;
+  private BoundUnaryOperatorKind bindUnaryOperatorKind(SyntaxToken token, Class type) {
+    for (var operatorKind : BoundUnaryOperatorKind.values()) {
+      if (token.getKind() == operatorKind.getSyntaxKind() && type == operatorKind.getType()) {
+        return operatorKind;
+      }
     }
-    switch (kind) {
-      case MinusToken:
-        return BoundUnaryOperatorKind.Negation;
-      case PlusToken:
-        return BoundUnaryOperatorKind.Identity;
-      default:
-        throw new IllegalStateException("Unknown unary syntax kind: " + kind);
-    }
+    return null;
   }
 
   private BoundExpression bindBinaryExpression(BinaryExpression syntax) {
     var boundLeft = bindExpression(syntax.getLeft());
-    var kind = bindBinaryOperatorKind(syntax.getOperator().getKind(), boundLeft.getType());
+    var boundRight = bindExpression(syntax.getRight());
+    var token = syntax.getOperator();
+    var kind = bindBinaryOperatorKind(token, boundLeft.getType(), boundRight.getType());
+
     if (kind == null) {
       diagnostics.addError(
-          syntax.getOperator().getPosition(),
-          "Binary operator '"
-              + syntax.getOperator().getSrc()
-              + "' is not defined for type: '"
-              + boundLeft.getType()
-              + "'");
+          token.getPosition(),
+          "cannot find binary operator '%s' for types '%s' and '%s'",
+          token.getSrc(),
+          boundLeft.getType(),
+          boundRight.getType());
+      return boundLeft;
     }
-    var boundRight = bindExpression(syntax.getRight());
     return new BoundBinaryExpression(boundLeft, kind, boundRight);
   }
 
-  private BoundBinaryOperatorKind bindBinaryOperatorKind(SyntaxKind kind, Class type) {
-    if (type != Long.class) {
-      return null;
+  private BoundBinaryOperatorKind bindBinaryOperatorKind(
+      SyntaxToken token, Class leftType, Class rightType) {
+    for (var operatorKind : BoundBinaryOperatorKind.values()) {
+      if (token.getKind() == operatorKind.getSyntaxKind()
+          && leftType == operatorKind.getLeftType()
+          && rightType == operatorKind.getRigthType()) {
+        return operatorKind;
+      }
     }
-    switch (kind) {
-      case MinusToken:
-        return BoundBinaryOperatorKind.Substraction;
-      case PlusToken:
-        return BoundBinaryOperatorKind.Addition;
-      case StartToken:
-        return BoundBinaryOperatorKind.Multiplication;
-      case SlashToken:
-        return BoundBinaryOperatorKind.Division;
-      default:
-        throw new IllegalStateException("Unknown binary syntax kind: " + kind);
-    }
+    return null;
   }
 }

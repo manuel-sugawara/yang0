@@ -94,9 +94,14 @@ public class Lexer {
   }
 
   private char peek() {
-    if (position >= src.length()) {
+    return peek(0);
+  }
+
+  private char peek(int offset) {
+    var newPosition = (position + offset);
+    if (newPosition >= src.length()) {
       return 0;
     }
-    return src.charAt(position);
+    return src.charAt(newPosition);
   }
 }

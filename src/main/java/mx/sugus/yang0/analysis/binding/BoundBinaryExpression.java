@@ -27,7 +27,7 @@ public class BoundBinaryExpression implements BoundExpression {
 
   @Override
   public Class getType() {
-    return null;
+    return operatorKind.getReturnType();
   }
 
   @Override
