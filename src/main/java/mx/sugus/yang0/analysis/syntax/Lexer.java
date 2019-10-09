@@ -81,12 +81,29 @@ public class Lexer {
       case '/':
         ++position;
         return new SyntaxToken(SyntaxKind.SlashToken, start, "/");
+      case '!':
+        ++position;
+        return new SyntaxToken(SyntaxKind.BangToken, start, "!");
       case '(':
         ++position;
         return new SyntaxToken(SyntaxKind.OpenParenToken, start, "(");
       case ')':
         ++position;
         return new SyntaxToken(SyntaxKind.CloseParenToken, start, ")");
+      case '&':
+        if (peek(1) == '&') {
+          position += 2;
+          return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, "&&");
+        } else {
+          break;
+        }
+      case '|':
+        if (peek(1) == '|') {
+          position += 2;
+          return new SyntaxToken(SyntaxKind.PipePipeToken, start, "||");
+        } else {
+          break;
+        }
     }
 
     var text = src.substring(start, ++position);

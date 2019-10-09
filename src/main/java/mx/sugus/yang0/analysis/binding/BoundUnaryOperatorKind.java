@@ -4,7 +4,8 @@ import mx.sugus.yang0.analysis.syntax.SyntaxKind;
 
 public enum BoundUnaryOperatorKind {
   Identity(SyntaxKind.PlusToken, Long.class, Long.class),
-  Negation(SyntaxKind.MinusToken, Long.class, Long.class);
+  Negation(SyntaxKind.MinusToken, Long.class, Long.class),
+  LogicalNot(SyntaxKind.BangToken, Boolean.class, Boolean.class);
 
   private final SyntaxKind syntaxKind;
   private final Class type;

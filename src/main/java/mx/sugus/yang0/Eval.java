@@ -25,32 +25,40 @@ public class Eval {
 
     if (kind == BoundNodeKind.BinaryExpression) {
       var expr = (BoundBinaryExpression) node;
-      var left = (long) eval(expr.getLeft());
-      var right = (long) eval(expr.getRight());
+      var left = eval(expr.getLeft());
+      var right = eval(expr.getRight());
       switch (expr.getOperatorKind()) {
         case Addition:
-          return left + right;
+          return (long) left + (long) right;
         case Subtraction:
-          return left - right;
+          return (long) left - (long) right;
         case Multiplication:
-          return left * right;
+          return (long) left * (long) right;
         case Division:
-          return left / right;
+          return (long) left / (long) right;
+        case LogicalAnd:
+          return (boolean) left && (boolean) right;
+        case LogicalOr:
+          return (boolean) left || (boolean) right;
         default:
-          throw new IllegalStateException("unexpected binary operator kind: " + expr.getOperatorKind());
+          throw new IllegalStateException(
+              "unexpected binary operator kind: " + expr.getOperatorKind());
       }
     }
 
     if (kind == BoundNodeKind.UnaryExpression) {
       var expr = (BoundUnaryExpression) node;
-      var operand = (long) eval(expr.getOperand());
+      var operand = eval(expr.getOperand());
       switch (expr.getOperatorKind()) {
         case Identity:
           return operand;
         case Negation:
-          return -operand;
+          return -(long) operand;
+        case LogicalNot:
+          return !(boolean) operand;
         default:
-          throw new IllegalStateException("unexpected unary operator kind: " + expr.getOperatorKind());
+          throw new IllegalStateException(
+              "unexpected unary operator kind: " + expr.getOperatorKind());
       }
     }
 

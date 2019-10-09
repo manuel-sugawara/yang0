@@ -24,5 +24,5 @@ public enum SyntaxKind {
   BinaryExpression,
   LongExpression,
   ParentExpression,
-  UnaryExpression, LiteralExpression, TrueKeyword, FalseKeyword, Identifier,
+  UnaryExpression, LiteralExpression, TrueKeyword, FalseKeyword, Identifier, AmpersandAmpersandToken, PipePipeToken, BangToken,
 }
