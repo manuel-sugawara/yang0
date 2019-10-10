@@ -46,11 +46,7 @@ public class Binder {
     var kind = bindUnaryOperatorKind(token, type);
 
     if (kind == null) {
-      diagnostics.addError(
-          token.getPosition(),
-          "cannot find unary operator '%s' for type '%s'",
-          token.getSrc(),
-          type);
+      diagnostics.reportUnaryOperatorNotFound(token, type);
       return boundOperand;
     }
     return new BoundUnaryExpression(kind, boundOperand);
@@ -72,12 +68,7 @@ public class Binder {
     var kind = bindBinaryOperatorKind(token, boundLeft.getType(), boundRight.getType());
 
     if (kind == null) {
-      diagnostics.addError(
-          token.getPosition(),
-          "cannot find binary operator '%s' for types '%s' and '%s'",
-          token.getSrc(),
-          boundLeft.getType(),
-          boundRight.getType());
+      diagnostics.reportBinaryOperatorNotFound(token, boundLeft.getType(), boundRight.getType());
       return boundLeft;
     }
     return new BoundBinaryExpression(boundLeft, kind, boundRight);

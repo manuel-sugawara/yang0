@@ -41,7 +41,7 @@ public class Lexer {
         var value = Long.parseLong(text);
         return new SyntaxToken(SyntaxKind.LongToken, start, text, value);
       } catch (NumberFormatException e) {
-        diagnostics.addError(start, "invalid long literal: \"" + text + "\": " + e.getMessage());
+        diagnostics.reportInvalidNumber(start, text, Long.class);
         return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
       }
     }
@@ -106,6 +106,7 @@ public class Lexer {
         }
     }
 
+    diagnostics.reportUnexpectedCharacter(start, src.charAt(start));
     var text = src.substring(start, ++position);
     return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
   }

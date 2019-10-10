@@ -80,6 +80,7 @@ public class Parser {
       return new LiteralExpression(token);
     }
 
+    diagnostics.reportExpectingPrimaryExpression(token.getPosition(), token);
     return new ErrorExpression("primary", token);
   }
 
@@ -102,7 +103,7 @@ public class Parser {
   private SyntaxToken match(SyntaxKind kind) {
     SyntaxToken token = next();
     if (token.getKind() != kind) {
-      diagnostics.addError(token, "expecting token kind: " + kind);
+      diagnostics.reportUnexpectedToken(token.getPosition(), token, kind);
       return new SyntaxToken(kind, -1, null);
     }
     return token;
