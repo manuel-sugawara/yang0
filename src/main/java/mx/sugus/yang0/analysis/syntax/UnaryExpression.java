@@ -22,4 +22,9 @@ public class UnaryExpression implements Expression {
   public Expression getOperand() {
     return operand;
   }
+
+  @Override
+  public String toString() {
+    return "(" + operator.getSrc() + " " + operand.toString() + ")";
+  }
 }

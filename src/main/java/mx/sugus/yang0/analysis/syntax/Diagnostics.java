@@ -8,7 +8,7 @@ public class Diagnostics {
   private final List<String> errors = new ArrayList<>();
 
   public Diagnostics() {}
-  
+
   public List<String> getErrors() {
     return errors;
   }

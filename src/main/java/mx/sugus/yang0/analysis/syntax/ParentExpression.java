@@ -20,4 +20,9 @@ public class ParentExpression implements Expression {
   public SyntaxKind getKind() {
     return SyntaxKind.ParentExpression;
   }
+
+  @Override
+  public String toString() {
+    return expr.toString();
+  }
 }

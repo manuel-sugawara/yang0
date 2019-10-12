@@ -15,7 +15,7 @@ public class Main {
 
   public static void main(String[] args) throws java.io.IOException {
     var in = new BufferedReader(new InputStreamReader(System.in));
-
+    var showTree = false;
     while (true) {
       System.out.print("> ");
       System.out.flush();
@@ -23,12 +23,17 @@ public class Main {
       if (line == null || line.length() == 0) {
         System.out.println("Bye!");
         break;
+      } else if (line.equals("#showTree")) {
+        showTree = !showTree;
       } else {
         var parser = new Parser(line);
         var tree = parser.parse();
         var binder = new Binder(parser.getDiagnostics());
         var boundExpression = binder.bindExpression((Expression) tree.getRoot());
         var compilation = new Compilation(binder.getDiagnostics(), boundExpression);
+        if (showTree) {
+          System.out.println("Tree: " + tree.getRoot());
+        }
         if (compilation.getDiagnostics().hasErrors()) {
           System.out.printf(
               "Errors while parsing input:\n %s\n",

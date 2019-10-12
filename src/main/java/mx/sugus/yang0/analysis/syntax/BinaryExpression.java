@@ -31,6 +31,6 @@ public class BinaryExpression implements Expression {
 
   @Override
   public String toString() {
-    return "(" + operator.toString() + " " + left.toString() + " " + right.toString() + ")";
+    return "(" + operator.getSrc() + " " + left.toString() + " " + right.toString() + ")";
   }
 }

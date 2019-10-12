@@ -10,7 +10,6 @@ public enum SyntaxKind {
 
   // Literals
   LongToken,
-  LiteralToken,
 
   // Operators
   PlusToken,
@@ -22,7 +21,13 @@ public enum SyntaxKind {
 
   // Syntax
   BinaryExpression,
-  LongExpression,
   ParentExpression,
-  UnaryExpression, LiteralExpression, TrueKeyword, FalseKeyword, Identifier, AmpersandAmpersandToken, PipePipeToken, BangToken,
+  UnaryExpression,
+  LiteralExpression,
+  TrueKeyword,
+  FalseKeyword,
+  Identifier,
+  AmpersandAmpersandToken,
+  PipePipeToken,
+  BangToken,
 }
