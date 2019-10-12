@@ -7,7 +7,7 @@ public class SyntaxFacts {
       case PlusToken:
       case MinusToken:
       case BangToken:
-        return 3;
+        return 5;
 
       default:
         return 0;
@@ -19,13 +19,15 @@ public class SyntaxFacts {
     switch (token.getKind()) {
       case StartToken:
       case SlashToken:
-        return 3;
+        return 4;
 
       case PlusToken:
       case MinusToken:
-        return 2;
+        return 3;
 
       case AmpersandAmpersandToken:
+        return 2;
+
       case PipePipeToken:
         return 1;
 

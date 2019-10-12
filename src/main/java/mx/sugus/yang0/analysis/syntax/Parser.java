@@ -31,13 +31,13 @@ public class Parser {
 
   public SyntaxTree parse() {
     Expression expression = parseExpression(0);
-    SyntaxToken token = match(SyntaxKind.EofToken);
+    SyntaxToken token = expect(SyntaxKind.EofToken);
     return new SyntaxTree(diagnostics, expression, token);
   }
 
   private Expression parseExpression(int parentPrecedence) {
-    Expression left;
     int unaryOperatorPrecedence = getUnaryOperatorPriority(peek());
+    Expression left;
     if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence > parentPrecedence) {
       var operator = next();
       var operand = parsePrimary();
@@ -57,31 +57,22 @@ public class Parser {
   }
 
   private Expression parsePrimary() {
-    var token = peek();
-    if (token.getKind() == SyntaxKind.OpenParenToken) {
-      var start = next();
-      var node = parseExpression(0);
-      var end = match(SyntaxKind.CloseParenToken);
-      return new ParentExpression(start, node, end);
-    }
+    var token = next();
+    var kind = token.getKind();
 
-    if (token.getKind() == SyntaxKind.LongToken) {
-      ++position;
-      return new LiteralExpression(token);
+    switch (kind) {
+      case OpenParenToken:
+        var expression = parseExpression(0);
+        var end = expect(SyntaxKind.CloseParenToken);
+        return new ParentExpression(token, expression, end);
+      case LongToken:
+      case TrueKeyword:
+      case FalseKeyword:
+        return new LiteralExpression(token);
+      default:
+        diagnostics.reportExpectingPrimaryExpression(token.getPosition(), token);
+        return new ErrorExpression("primary", token);
     }
-
-    if (token.getKind() == SyntaxKind.TrueKeyword) {
-      ++position;
-      return new LiteralExpression(token);
-    }
-
-    if (token.getKind() == SyntaxKind.FalseKeyword) {
-      ++position;
-      return new LiteralExpression(token);
-    }
-
-    diagnostics.reportExpectingPrimaryExpression(token.getPosition(), token);
-    return new ErrorExpression("primary", token);
   }
 
   private SyntaxToken next() {
@@ -100,7 +91,7 @@ public class Parser {
     return tokens.get(position);
   }
 
-  private SyntaxToken match(SyntaxKind kind) {
+  private SyntaxToken expect(SyntaxKind kind) {
     SyntaxToken token = next();
     if (token.getKind() != kind) {
       diagnostics.reportUnexpectedToken(token.getPosition(), token, kind);
