@@ -28,12 +28,12 @@ public class Main {
       } else {
         var parser = new Parser(line);
         var tree = parser.parse();
-        var binder = new Binder(parser.getDiagnostics());
-        var boundExpression = binder.bindExpression((Expression) tree.getRoot());
-        var compilation = new Compilation(binder.getDiagnostics(), boundExpression);
         if (showTree) {
           System.out.println("Tree: " + tree.getRoot());
         }
+        var binder = new Binder(parser.getDiagnostics());
+        var boundExpression = binder.bindExpression((Expression) tree.getRoot());
+        var compilation = new Compilation(binder.getDiagnostics(), boundExpression);
         if (compilation.getDiagnostics().hasErrors()) {
           System.out.printf(
               "Errors while parsing input:\n %s\n",

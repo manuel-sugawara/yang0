@@ -1,5 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
+import java.util.function.Predicate;
+
 public class Lexer {
 
   private final String src;
@@ -13,93 +15,44 @@ public class Lexer {
 
   public SyntaxToken next() {
     var ch = peek();
-    if (ch == 0) {
-      return new SyntaxToken(SyntaxKind.EofToken, position, "");
-    }
-
-    var start = position;
     if (Character.isWhitespace(ch)) {
-      var buf = new StringBuilder(ch);
-      ++position;
-      while (Character.isWhitespace(ch = peek())) {
-        buf.append(ch);
-        ++position;
-      }
-      var value = src.substring(start, position);
-      return new SyntaxToken(SyntaxKind.WhitespaceToken, start, value, value);
+      return whitespace();
     }
 
     if (Character.isDigit(ch)) {
-      var buf = new StringBuilder(ch);
-      ++position;
-      while (Character.isDigit(ch = peek())) {
-        buf.append(ch);
-        ++position;
-      }
-      var text = src.substring(start, position);
-      try {
-        var value = Long.parseLong(text);
-        return new SyntaxToken(SyntaxKind.LongToken, start, text, value);
-      } catch (NumberFormatException e) {
-        diagnostics.reportInvalidNumber(start, text, Long.class);
-        return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
-      }
+      return integer();
     }
 
     if (Character.isJavaIdentifierStart(ch)) {
-      var buf = new StringBuilder(ch);
-      ++position;
-      while (true) {
-        ch = peek();
-        if (ch == 0 || !Character.isJavaIdentifierPart(ch)) {
-          break;
-        }
-        buf.append(ch);
-        ++position;
-      }
-      var text = src.substring(start, position);
-      switch (text) {
-        case "true":
-          return new SyntaxToken(SyntaxKind.TrueKeyword, start, text, Boolean.TRUE);
-        case "false":
-          return new SyntaxToken(SyntaxKind.FalseKeyword, start, text, Boolean.FALSE);
-        default:
-          return new SyntaxToken(SyntaxKind.Identifier, start, text);
-      }
+      return identifier();
     }
 
-    switch (ch) {
+    var start = position;
+    switch (peekAndMove()) {
+      case 0:
+        return new SyntaxToken(SyntaxKind.EofToken, position, "");
       case '+':
-        ++position;
         return new SyntaxToken(SyntaxKind.PlusToken, start, "+");
       case '-':
-        ++position;
         return new SyntaxToken(SyntaxKind.MinusToken, start, "-");
       case '*':
-        ++position;
         return new SyntaxToken(SyntaxKind.StartToken, start, "*");
       case '/':
-        ++position;
         return new SyntaxToken(SyntaxKind.SlashToken, start, "/");
       case '!':
-        ++position;
         return new SyntaxToken(SyntaxKind.BangToken, start, "!");
       case '(':
-        ++position;
         return new SyntaxToken(SyntaxKind.OpenParenToken, start, "(");
       case ')':
-        ++position;
         return new SyntaxToken(SyntaxKind.CloseParenToken, start, ")");
       case '&':
-        if (peek(1) == '&') {
-          position += 2;
+        if (matchAndMove('&')) {
           return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, "&&");
         } else {
           break;
         }
       case '|':
-        if (peek(1) == '|') {
-          position += 2;
+        if (matchAndMove('|')) {
           return new SyntaxToken(SyntaxKind.PipePipeToken, start, "||");
         } else {
           break;
@@ -107,8 +60,70 @@ public class Lexer {
     }
 
     diagnostics.reportUnexpectedCharacter(start, src.charAt(start));
-    var text = src.substring(start, ++position);
+    var text = src.substring(start, position);
     return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
+  }
+
+  private SyntaxToken whitespace() {
+    var start = position;
+    var text = consumeWhile(Character::isWhitespace);
+    return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, text);
+  }
+
+  private SyntaxToken integer() {
+    var start = position;
+    var text = consumeWhile(Character::isDigit);
+    try {
+      var value = Long.parseLong(text);
+      return new SyntaxToken(SyntaxKind.LongToken, start, text, value);
+    } catch (NumberFormatException e) {
+      diagnostics.reportInvalidNumber(start, text, Long.class);
+      return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
+    }
+  }
+
+  private SyntaxToken identifier() {
+    var start = position;
+    var text = consumeWhile(Character::isJavaIdentifierPart);
+    switch (text) {
+      case "true":
+        return new SyntaxToken(SyntaxKind.TrueKeyword, start, text, Boolean.TRUE);
+      case "false":
+        return new SyntaxToken(SyntaxKind.FalseKeyword, start, text, Boolean.FALSE);
+      default:
+        return new SyntaxToken(SyntaxKind.Identifier, start, text);
+    }
+  }
+
+  private String consumeWhile(Predicate<Character> predicate) {
+    var buf = new StringBuilder();
+    while (true) {
+      var ch = peek();
+      if (ch != 0 && predicate.test(ch)) {
+        position++;
+        buf.append(ch);
+      } else {
+        break;
+      }
+    }
+    return buf.toString();
+  }
+
+  private char peekAndMove() {
+    var ch = peek();
+    if (ch != 0) {
+      position++;
+    }
+    return ch;
+  }
+
+  private boolean matchAndMove(char expected) {
+    var ch = peek();
+    if (ch == expected) {
+      position++;
+      return true;
+    }
+    return false;
   }
 
   private char peek() {
