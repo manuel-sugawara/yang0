@@ -48,7 +48,7 @@ public class Eval {
 
     if (kind == BoundNodeKind.UnaryExpression) {
       var expr = (BoundUnaryExpression) node;
-      var operand = eval(expr.getOperand());
+      var operand = eval(expr.getBoundOperand());
       switch (expr.getOperatorKind()) {
         case Identity:
           return operand;

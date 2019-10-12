@@ -1,6 +1,7 @@
 package mx.sugus.yang0.analysis.binding;
 
 import mx.sugus.yang0.analysis.syntax.SyntaxKind;
+import mx.sugus.yang0.analysis.syntax.SyntaxToken;
 
 public enum BoundBinaryOperatorKind {
   Addition(SyntaxKind.PlusToken, Long.class, Long.class, Long.class),
@@ -12,15 +13,27 @@ public enum BoundBinaryOperatorKind {
 
   private final SyntaxKind syntaxKind;
   private final Class leftType;
-  private final Class rigthType;
+  private final Class rightType;
   private final Class returnType;
 
-  BoundBinaryOperatorKind(SyntaxKind syntaxKind, Class leftType, Class rigthType,
-      Class returnType) {
+  BoundBinaryOperatorKind(
+      SyntaxKind syntaxKind, Class leftType, Class rightType, Class returnType) {
     this.syntaxKind = syntaxKind;
     this.leftType = leftType;
-    this.rigthType = rigthType;
+    this.rightType = rightType;
     this.returnType = returnType;
+  }
+
+  public static BoundBinaryOperatorKind bindBinaryOperatorKind(
+      SyntaxToken token, Class leftType, Class rightType) {
+    for (var operatorKind : BoundBinaryOperatorKind.values()) {
+      if (token.getKind() == operatorKind.getSyntaxKind()
+          && leftType == operatorKind.getLeftType()
+          && rightType == operatorKind.getRightType()) {
+        return operatorKind;
+      }
+    }
+    return null;
   }
 
   public SyntaxKind getSyntaxKind() {
@@ -31,8 +44,8 @@ public enum BoundBinaryOperatorKind {
     return leftType;
   }
 
-  public Class getRigthType() {
-    return rigthType;
+  public Class getRightType() {
+    return rightType;
   }
 
   public Class getReturnType() {

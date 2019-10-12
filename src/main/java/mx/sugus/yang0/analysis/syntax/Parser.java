@@ -36,8 +36,9 @@ public class Parser {
   }
 
   private Expression parseExpression(int parentPrecedence) {
-    int unaryOperatorPrecedence = getUnaryOperatorPriority(peek());
+    var unaryOperatorPrecedence = getUnaryOperatorPriority(peek());
     Expression left;
+
     if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence > parentPrecedence) {
       var operator = next();
       var operand = parsePrimary();
@@ -76,7 +77,7 @@ public class Parser {
   }
 
   private SyntaxToken next() {
-    int size = tokens.size();
+    var size = tokens.size();
     if (position >= size) {
       return tokens.get(size - 1);
     }
@@ -92,7 +93,7 @@ public class Parser {
   }
 
   private SyntaxToken expect(SyntaxKind kind) {
-    SyntaxToken token = next();
+    var token = next();
     if (token.getKind() != kind) {
       diagnostics.reportUnexpectedToken(token.getPosition(), token, kind);
       return new SyntaxToken(kind, -1, null);

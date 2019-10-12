@@ -1,16 +1,18 @@
 package mx.sugus.yang0.analysis.binding;
 
+import mx.sugus.yang0.analysis.syntax.LiteralExpression;
+
 public class BoundLiteralExpression implements BoundExpression {
 
-  private final Object value;
+  private final LiteralExpression literal;
 
-  public BoundLiteralExpression(Object value) {
-    this.value = value;
+  public BoundLiteralExpression(LiteralExpression literal) {
+    this.literal = literal;
   }
 
   @Override
   public Class getType() {
-    return value.getClass();
+    return literal.getValue().getClass();
   }
 
   @Override
@@ -19,6 +21,6 @@ public class BoundLiteralExpression implements BoundExpression {
   }
 
   public Object getValue() {
-    return value;
+    return literal.getValue();
   }
 }

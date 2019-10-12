@@ -17,19 +17,20 @@ public class SyntaxFacts {
 
   public static int getBinaryOperatorPriority(SyntaxToken token) {
     switch (token.getKind()) {
+      case AmpersandAmpersandToken:
+        return 4;
+
+      case PipePipeToken:
+        return 3;
+
       case StartToken:
       case SlashToken:
-        return 4;
+        return 2;
 
       case PlusToken:
       case MinusToken:
-        return 3;
-
-      case AmpersandAmpersandToken:
-        return 2;
-
-      case PipePipeToken:
         return 1;
+
 
       default:
         return 0;

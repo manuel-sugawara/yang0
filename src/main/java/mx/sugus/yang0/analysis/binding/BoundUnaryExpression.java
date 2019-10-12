@@ -1,22 +1,26 @@
 package mx.sugus.yang0.analysis.binding;
 
+import mx.sugus.yang0.analysis.syntax.SyntaxToken;
+
 public class BoundUnaryExpression implements BoundExpression {
 
+  private final SyntaxToken operator;
   private final BoundUnaryOperatorKind operatorKind;
-  private final BoundExpression operand;
+  private final BoundExpression boundOperand;
 
   public BoundUnaryExpression(
-      BoundUnaryOperatorKind operatorKind, BoundExpression operand) {
+      SyntaxToken operator, BoundUnaryOperatorKind operatorKind, BoundExpression boundOperand) {
+    this.operator = operator;
     this.operatorKind = operatorKind;
-    this.operand = operand;
+    this.boundOperand = boundOperand;
   }
 
   public BoundUnaryOperatorKind getOperatorKind() {
     return operatorKind;
   }
 
-  public BoundExpression getOperand() {
-    return operand;
+  public BoundExpression getBoundOperand() {
+    return boundOperand;
   }
 
   @Override
