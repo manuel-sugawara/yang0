@@ -7,7 +7,7 @@ public class SyntaxFacts {
       case PlusToken:
       case MinusToken:
       case BangToken:
-        return 5;
+        return 10;
 
       default:
         return 0;
@@ -17,20 +17,31 @@ public class SyntaxFacts {
 
   public static int getBinaryOperatorPriority(SyntaxToken token) {
     switch (token.getKind()) {
+
+      case StartToken:
+      case SlashToken:
+        return 8;
+
+      case PlusToken:
+      case MinusToken:
+        return 7;
+
+
+      case LessThanToken:
+      case LessThanEqualsToken:
+      case GraterThanToken:
+      case GraterThanEqualsToken:
+        return 6;
+
+      case EqualsEqualsToken:
+      case BangEqualsToken:
+        return 5;
+
       case AmpersandAmpersandToken:
         return 4;
 
       case PipePipeToken:
         return 3;
-
-      case StartToken:
-      case SlashToken:
-        return 2;
-
-      case PlusToken:
-      case MinusToken:
-        return 1;
-
 
       default:
         return 0;

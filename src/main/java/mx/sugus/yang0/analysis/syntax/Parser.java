@@ -5,6 +5,7 @@ import static mx.sugus.yang0.analysis.syntax.SyntaxFacts.getUnaryOperatorPriorit
 
 import java.util.ArrayList;
 import java.util.List;
+import mx.sugus.yang0.analysis.text.TextSource;
 
 public class Parser {
 
@@ -12,10 +13,14 @@ public class Parser {
   private final Diagnostics diagnostics;
   private int position;
 
-  public Parser(String src) {
+  public Parser(String text) {
+    this(new TextSource(text));
+  }
+
+  public Parser(TextSource source) {
+    diagnostics = new Diagnostics(source);
+    var lexer = new Lexer(source, diagnostics);
     tokens = new ArrayList<>();
-    diagnostics = new Diagnostics();
-    var lexer = new Lexer(src, diagnostics);
     SyntaxToken token;
     do {
       token = lexer.next();

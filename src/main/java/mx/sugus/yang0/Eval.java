@@ -36,6 +36,22 @@ public class Eval {
           return (long) left * (long) right;
         case Division:
           return (long) left / (long) right;
+        case Modulo:
+          return (long) left % (long) right;
+        case LongEquality:
+        case BooleanEquality:
+          return left.equals(right);
+        case BooleanNonEquality:
+        case LongNonEquality:
+          return !left.equals(right);
+        case RelationalLessThan:
+          return (long) left < (long) right;
+        case RelationalLessThanEquals:
+          return (long) left <= (long) right;
+        case RelationalGraterThan:
+          return (long) left > (long) right;
+        case RelationalGraterThanEquals:
+          return (long) left >= (long) right;
         case LogicalAnd:
           return (boolean) left && (boolean) right;
         case LogicalOr:

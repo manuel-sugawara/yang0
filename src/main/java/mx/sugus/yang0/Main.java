@@ -31,15 +31,25 @@ public class Main {
         if (showTree) {
           System.out.println("Tree: " + tree.getRoot());
         }
-        var binder = new Binder(parser.getDiagnostics());
-        var boundExpression = binder.bindExpression((Expression) tree.getRoot());
-        var compilation = new Compilation(binder.getDiagnostics(), boundExpression);
-        if (compilation.getDiagnostics().hasErrors()) {
+        if (parser.getDiagnostics().hasErrors()) {
           System.out.printf(
               "Errors while parsing input:\n %s\n",
-              compilation.getDiagnostics().getErrors().stream().collect(Collectors.joining("\n")));
+              parser.getDiagnostics().getDiagnostics().stream()
+                  .map(Object::toString)
+                  .collect(Collectors.joining("\n")));
         } else {
-          System.out.println("Result: " + eval(compilation));
+          var binder = new Binder(parser.getDiagnostics());
+          var boundExpression = binder.bindExpression((Expression) tree.getRoot());
+          var compilation = new Compilation(binder.getDiagnostics(), boundExpression);
+          if (compilation.getDiagnostics().hasErrors()) {
+            System.out.printf(
+                "Errors while parsing input:\n%s\n",
+                compilation.getDiagnostics().getDiagnostics().stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining("\n")));
+          } else {
+            System.out.println("Result: " + eval(compilation));
+          }
         }
       }
     }

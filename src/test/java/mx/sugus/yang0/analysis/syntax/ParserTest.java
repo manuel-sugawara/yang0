@@ -29,6 +29,8 @@ public class ParserTest {
       {"!true && false || true", "(|| (&& (! true) false) true)"},
       {"true && !false || true", "(|| (&& true (! false)) true)"},
       {"true || false && !true", "(|| true (&& false (! true)))"},
+      {"5 + 2 == 14 / 2 && 6 >= 20", "(&& (== (+ 5 2) (/ 14 2)) (>= 6 20))"},
+      {"1 <= 2 && 1 < 2", "(&& (<= 1 2) (< 1 2))"},
       {"!true", "(! true)"},
       {"!false", "(! false)"},
       {"-1", "(- 1)"},

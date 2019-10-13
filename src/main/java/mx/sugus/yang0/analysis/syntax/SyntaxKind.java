@@ -11,14 +11,6 @@ public enum SyntaxKind {
   // Literals
   LongToken,
 
-  // Operators
-  PlusToken,
-  MinusToken,
-  SlashToken,
-  StartToken,
-  OpenParenToken,
-  CloseParenToken,
-
   // Syntax
   BinaryExpression,
   ParentExpression,
@@ -27,7 +19,22 @@ public enum SyntaxKind {
   TrueKeyword,
   FalseKeyword,
   Identifier,
+
+  // Operators
+  PlusToken,
+  MinusToken,
+  SlashToken,
+  StartToken,
   AmpersandAmpersandToken,
   PipePipeToken,
   BangToken,
+  PercentToken,
+  OpenParenToken,
+  CloseParenToken,
+  LessThanEqualsToken,
+  LessThanToken,
+  GraterThanEqualsToken,
+  GraterThanToken,
+  BangEqualsToken,
+  EqualsEqualsToken,
 }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import mx.sugus.yang0.analysis.text.TextSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,12 +19,19 @@ public class LexerTest {
       {SyntaxKind.MinusToken, "-"},
       {SyntaxKind.SlashToken, "/"},
       {SyntaxKind.StartToken, "*"},
+      {SyntaxKind.PercentToken, "%"},
       {SyntaxKind.OpenParenToken, "("},
       {SyntaxKind.CloseParenToken, ")"},
       {SyntaxKind.TrueKeyword, "true"},
       {SyntaxKind.FalseKeyword, "false"},
       {SyntaxKind.AmpersandAmpersandToken, "&&"},
       {SyntaxKind.PipePipeToken, "||"},
+      {SyntaxKind.LessThanToken, "<"},
+      {SyntaxKind.LessThanEqualsToken, "<="},
+      {SyntaxKind.GraterThanToken, ">"},
+      {SyntaxKind.GraterThanEqualsToken, ">="},
+      {SyntaxKind.EqualsEqualsToken, "=="},
+      {SyntaxKind.BangEqualsToken, "!="},
       {SyntaxKind.BangToken, "!"},
       {SyntaxKind.ErrorToken, "&"},
       {SyntaxKind.ErrorToken, "|"},
@@ -43,7 +51,8 @@ public class LexerTest {
   @Test
   @Parameters(method = "testSingleTokenKind_Params")
   public void testSingleTokenKind(SyntaxKind kind, String text) {
-    var lexer = new Lexer(text, new Diagnostics());
+    var source = new TextSource(text);
+    var lexer = new Lexer(source, new Diagnostics(source));
     var token = lexer.next();
 
     assertEquals("invalid kind for text: " + text, kind, token.getKind());

@@ -1,15 +1,17 @@
 package mx.sugus.yang0.analysis.syntax;
 
 import java.util.function.Predicate;
+import mx.sugus.yang0.analysis.text.TextSource;
 
 public class Lexer {
 
-  private final String src;
+  private final TextSource source;
   private final Diagnostics diagnostics;
   private int position;
 
-  public Lexer(String src, Diagnostics diagnostics) {
-    this.src = src;
+
+  public Lexer(TextSource source, Diagnostics diagnostics) {
+    this.source = source;
     this.diagnostics = diagnostics;
   }
 
@@ -39,8 +41,32 @@ public class Lexer {
         return new SyntaxToken(SyntaxKind.StartToken, start, "*");
       case '/':
         return new SyntaxToken(SyntaxKind.SlashToken, start, "/");
+      case '%':
+        return new SyntaxToken(SyntaxKind.PercentToken, start, "%");
       case '!':
-        return new SyntaxToken(SyntaxKind.BangToken, start, "!");
+        if (matchAndMove('=')) {
+          return new SyntaxToken(SyntaxKind.BangEqualsToken, start, "!=");
+        } else {
+          return new SyntaxToken(SyntaxKind.BangToken, start, "!");
+        }
+      case '=':
+        if (matchAndMove('=')) {
+          return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==");
+        } else {
+          break;
+        }
+      case '<':
+        if (matchAndMove('=')) {
+          return new SyntaxToken(SyntaxKind.LessThanEqualsToken, start, "<=");
+        } else {
+          return new SyntaxToken(SyntaxKind.LessThanToken, start, "<");
+        }
+      case '>':
+        if (matchAndMove('=')) {
+          return new SyntaxToken(SyntaxKind.GraterThanEqualsToken, start, ">=");
+        } else {
+          return new SyntaxToken(SyntaxKind.GraterThanToken, start, ">");
+        }
       case '(':
         return new SyntaxToken(SyntaxKind.OpenParenToken, start, "(");
       case ')':
@@ -59,8 +85,8 @@ public class Lexer {
         }
     }
 
-    diagnostics.reportUnexpectedCharacter(start, src.charAt(start));
-    var text = src.substring(start, position);
+    diagnostics.reportUnexpectedCharacter(start, source.charAt(start));
+    var text = source.substring(start, position);
     return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
   }
 
@@ -132,9 +158,9 @@ public class Lexer {
 
   private char peek(int offset) {
     var newPosition = (position + offset);
-    if (newPosition >= src.length()) {
+    if (newPosition >= source.length()) {
       return 0;
     }
-    return src.charAt(newPosition);
+    return source.charAt(newPosition);
   }
 }
