@@ -90,11 +90,15 @@ public class Parser {
   }
 
   private SyntaxToken peek() {
+    return peek(0);
+  }
+
+  private SyntaxToken peek(int offset) {
     int size = tokens.size();
-    if (position >= size) {
+    if (position + offset >= size) {
       return tokens.get(size - 1);
     }
-    return tokens.get(position);
+    return tokens.get(position + offset);
   }
 
   private SyntaxToken expect(SyntaxKind kind) {
