@@ -53,7 +53,7 @@ public class Lexer {
         if (matchAndMove('=')) {
           return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==");
         } else {
-          break;
+          return new SyntaxToken(SyntaxKind.EqualsToken, start, "=");
         }
       case '<':
         if (matchAndMove('=')) {

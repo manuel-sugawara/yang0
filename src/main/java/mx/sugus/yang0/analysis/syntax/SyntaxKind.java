@@ -37,4 +37,5 @@ public enum SyntaxKind {
   GraterThanToken,
   BangEqualsToken,
   EqualsEqualsToken,
+  EqualsToken,
 }
