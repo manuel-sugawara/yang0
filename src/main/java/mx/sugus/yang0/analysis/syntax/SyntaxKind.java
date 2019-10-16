@@ -16,6 +16,10 @@ public enum SyntaxKind {
   ParentExpression,
   UnaryExpression,
   LiteralExpression,
+  AssignmentExpression,
+  VariableExpression,
+
+  // Misc
   TrueKeyword,
   FalseKeyword,
   Identifier,
