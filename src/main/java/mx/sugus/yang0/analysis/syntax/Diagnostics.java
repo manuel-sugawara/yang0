@@ -22,24 +22,37 @@ public class Diagnostics {
   }
 
   public void reportInvalidNumber(int position, String text, Class type) {
-    addError(position, text.length(),"Invalid number literal '%s' of type '%s'", text, type);
+    addError(position, text.length(), "Invalid number literal '%s' of type '%s'", text, type);
   }
 
   public void reportUnexpectedCharacter(int position, char character) {
-    addError(position, 1,"Unexpected char '%s' found", character);
+    addError(position, 1, "Unexpected char '%s' found", character);
   }
 
   public void reportUnexpectedToken(int position, SyntaxToken token, SyntaxKind kind) {
-    addError(position, token.getSrc().length(), "Unexpected token, got: '%s', expecting: '%s'", token, kind);
+    addError(
+        position,
+        token.getSrc().length(),
+        "Unexpected token, got: '%s', expecting: '%s'",
+        token,
+        kind);
   }
 
   public void reportExpectingPrimaryExpression(int position, SyntaxToken token) {
-    addError(position, token.getSrc().length(), "Unexpected input, got: '%s', expecting primary expression", token);
+    addError(
+        position,
+        token.getSrc().length(),
+        "Unexpected input, got: '%s', expecting primary expression",
+        token);
   }
 
   public void reportUnaryOperatorNotFound(SyntaxToken token, Class type) {
     addError(
-        token.getPosition(), token.getSrc().length(),"Cannot find unary operator '%s' for type '%s'", token.getSrc(), type);
+        token.getPosition(),
+        token.getSrc().length(),
+        "Cannot find unary operator '%s' for type '%s'",
+        token.getSrc(),
+        type);
   }
 
   public void reportBinaryOperatorNotFound(SyntaxToken token, Class leftType, Class rightType) {
@@ -52,9 +65,26 @@ public class Diagnostics {
         rightType);
   }
 
+  public void reportCannotConvert(SyntaxToken token, Class fromType, Class toType) {
+    addError(
+        token.getPosition(),
+        token.getSrc().length(),
+        "Cannot convert type '%s' to '%s'",
+        fromType,
+        toType);
+  }
+
   private void addError(int position, int length, String fmt, Object... args) {
     var diagnostic = new Diagnostic(Level.Error, source, position, length, fmt, args);
     diagnostics.add(diagnostic);
+  }
+
+  public void reportVariableNotFound(SyntaxToken identifier) {
+    addError(
+        identifier.getPosition(),
+        identifier.getSrc().length(),
+        "Variable with name '%s' was not found",
+        identifier.getSrc());
   }
 
   static enum Level {

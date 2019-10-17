@@ -3,23 +3,31 @@ package mx.sugus.yang0.analysis.binding;
 import static mx.sugus.yang0.analysis.binding.BoundBinaryOperatorKind.bindBinaryOperatorKind;
 import static mx.sugus.yang0.analysis.binding.BoundUnaryOperatorKind.bindUnaryOperatorKind;
 
+import mx.sugus.yang0.analysis.syntax.AssignmentExpression;
 import mx.sugus.yang0.analysis.syntax.BinaryExpression;
 import mx.sugus.yang0.analysis.syntax.Diagnostics;
 import mx.sugus.yang0.analysis.syntax.Expression;
 import mx.sugus.yang0.analysis.syntax.LiteralExpression;
 import mx.sugus.yang0.analysis.syntax.ParentExpression;
 import mx.sugus.yang0.analysis.syntax.UnaryExpression;
+import mx.sugus.yang0.analysis.syntax.VariableExpression;
 
 public class Binder {
 
   private final Diagnostics diagnostics;
+  private final BoundScope scope;
 
-  public Binder(Diagnostics diagnostics) {
+  public Binder(BoundScope scope, Diagnostics diagnostics) {
+    this.scope = scope;
     this.diagnostics = diagnostics;
   }
 
   public Diagnostics getDiagnostics() {
     return diagnostics;
+  }
+
+  public BoundScope getScope() {
+    return scope;
   }
 
   public BoundExpression bindExpression(Expression syntax) {
@@ -33,9 +41,37 @@ public class Binder {
         return bindBinaryExpression((BinaryExpression) syntax);
       case ParentExpression:
         return bindParentExpression((ParentExpression) syntax);
+      case AssignmentExpression:
+        return bindAssignmentExpression((AssignmentExpression) syntax);
+      case VariableExpression:
+        return bindVariableExpression((VariableExpression) syntax);
       default:
         throw new IllegalStateException("Unknown expression kind: " + kind);
     }
+  }
+
+  private BoundExpression bindVariableExpression(VariableExpression syntax) {
+    var variable = scope.getDeclared(syntax.getIdentifier());
+    if (variable == null) {
+      diagnostics.reportVariableNotFound(syntax.getIdentifier());
+      variable = new VariableSymbol(syntax.getIdentifier(), Class.class);
+    }
+    return new BoundVariableExpression(variable);
+  }
+
+  private BoundExpression bindAssignmentExpression(AssignmentExpression syntax) {
+    var initializer = bindExpression(syntax.getInitializer());
+    var variable = scope.getDeclared(syntax.getIdentifier());
+    if (variable != null) {
+      if (variable.getType() != initializer.getType()) {
+        diagnostics.reportCannotConvert(
+            syntax.getOperator(), variable.getType(), initializer.getType());
+        return initializer;
+      }
+    } else {
+      variable = scope.declare(syntax.getIdentifier(), initializer.getType());
+    }
+    return new BoundAssignmentExpression(variable, syntax.getOperator(), initializer);
   }
 
   private BoundExpression bindParentExpression(ParentExpression syntax) {
@@ -65,7 +101,6 @@ public class Binder {
     var boundRight = bindExpression(syntax.getRight());
     var operator = syntax.getOperator();
     var kind = bindBinaryOperatorKind(operator, boundLeft.getType(), boundRight.getType());
-
     if (kind == null) {
       diagnostics.reportBinaryOperatorNotFound(operator, boundLeft.getType(), boundRight.getType());
       return boundLeft;

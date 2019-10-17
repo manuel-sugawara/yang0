@@ -14,9 +14,21 @@ public class BoundParentExpression implements BoundExpression {
     this.end = end;
   }
 
+  public SyntaxToken getStart() {
+    return start;
+  }
+
+  public BoundExpression getExpression() {
+    return expression;
+  }
+
+  public SyntaxToken getEnd() {
+    return end;
+  }
+
   @Override
   public Class getType() {
-    return null;
+    return expression.getType();
   }
 
   @Override

@@ -1,5 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
+import java.util.Objects;
+
 public class SyntaxToken {
 
   private final SyntaxKind kind;
@@ -39,5 +41,25 @@ public class SyntaxToken {
 
   public String toString() {
     return String.format("%s:%s [%s]", kind, position, src);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SyntaxToken that = (SyntaxToken) o;
+    return position == that.position &&
+        kind == that.kind &&
+        Objects.equals(src, that.src) &&
+        Objects.equals(value, that.value);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(kind, position, src, value);
   }
 }

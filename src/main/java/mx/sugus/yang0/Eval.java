@@ -1,21 +1,25 @@
 package mx.sugus.yang0;
 
 import mx.sugus.yang0.analysis.Compilation;
+import mx.sugus.yang0.analysis.binding.BoundAssignmentExpression;
 import mx.sugus.yang0.analysis.binding.BoundBinaryExpression;
 import mx.sugus.yang0.analysis.binding.BoundExpression;
+import mx.sugus.yang0.analysis.binding.BoundGlobalScope;
 import mx.sugus.yang0.analysis.binding.BoundLiteralExpression;
 import mx.sugus.yang0.analysis.binding.BoundNodeKind;
+import mx.sugus.yang0.analysis.binding.BoundParentExpression;
 import mx.sugus.yang0.analysis.binding.BoundUnaryExpression;
+import mx.sugus.yang0.analysis.binding.BoundVariableExpression;
 
 public class Eval {
 
   public Eval() {}
 
   public static Object eval(Compilation compilation) {
-    return eval(compilation.getExpression());
+    return eval(compilation.getScope(), compilation.getExpression());
   }
 
-  public static Object eval(BoundExpression node) {
+  public static Object eval(BoundGlobalScope scope, BoundExpression node) {
     var kind = node.getKind();
 
     if (kind == BoundNodeKind.LiteralExpression) {
@@ -23,10 +27,27 @@ public class Eval {
       return expr.getValue();
     }
 
+    if (kind == BoundNodeKind.AssignmentExpression) {
+      var expr = (BoundAssignmentExpression) node;
+      var value = eval(scope, expr.getInitializer());
+      scope.setValue(expr.getSymbol(), value);
+      return value;
+    }
+
+    if (kind == BoundNodeKind.VariableExpression) {
+      var expr = (BoundVariableExpression) node;
+      return scope.getValue(expr.getSymbol());
+    }
+
+    if (kind == BoundNodeKind.ParentExpression) {
+      var expr = (BoundParentExpression) node;
+      return eval(scope, expr.getExpression());
+    }
+
     if (kind == BoundNodeKind.BinaryExpression) {
       var expr = (BoundBinaryExpression) node;
-      var left = eval(expr.getLeft());
-      var right = eval(expr.getRight());
+      var left = eval(scope, expr.getLeft());
+      var right = eval(scope, expr.getRight());
       switch (expr.getOperatorKind()) {
         case Addition:
           return (long) left + (long) right;
@@ -64,7 +85,7 @@ public class Eval {
 
     if (kind == BoundNodeKind.UnaryExpression) {
       var expr = (BoundUnaryExpression) node;
-      var operand = eval(expr.getBoundOperand());
+      var operand = eval(scope, expr.getBoundOperand());
       switch (expr.getOperatorKind()) {
         case Identity:
           return operand;
