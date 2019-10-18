@@ -15,13 +15,18 @@ public class BoundScope {
   }
 
   public BoundScope(BoundScope parent) {
-
     this.parent = parent;
     this.variables = new HashMap<>();
   }
 
   public VariableSymbol getDeclared(SyntaxToken identifier) {
-    return variables.get(identifier.getSrc());
+    var symbol = variables.get(identifier.getSrc());
+    if (symbol == null) {
+      if (parent != null) {
+        return parent.getDeclared(identifier);
+      }
+    }
+    return symbol;
   }
 
   public VariableSymbol declare(SyntaxToken identifier, Class type) {
