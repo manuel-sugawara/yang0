@@ -1,6 +1,5 @@
 package mx.sugus.yang0;
 
-import static mx.sugus.yang0.Eval.eval;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -51,7 +50,8 @@ public class Main {
         reportErrors(compilation.getDiagnostics());
         break;
       } else {
-        System.out.println("Result: " + eval(compilation));
+        var evaluator = new Eval(compilation);
+        System.out.println("Result: " + evaluator.eval());
       }
     }
   }
