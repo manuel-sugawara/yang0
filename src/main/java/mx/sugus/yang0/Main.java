@@ -9,7 +9,7 @@ import mx.sugus.yang0.analysis.binding.Binder;
 import mx.sugus.yang0.analysis.binding.BoundGlobalScope;
 import mx.sugus.yang0.analysis.binding.BoundScope;
 import mx.sugus.yang0.analysis.syntax.Diagnostics;
-import mx.sugus.yang0.analysis.syntax.Expression;
+import mx.sugus.yang0.analysis.syntax.ExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.Parser;
 
 /** Starting point for the Yang0 REPL */
@@ -43,7 +43,7 @@ public class Main {
         break;
       }
       var binder = new Binder(new BoundScope(), parser.getDiagnostics());
-      var boundExpression = binder.bindExpression((Expression) tree.getRoot());
+      var boundExpression = binder.bindExpression((ExpressionSyntax) tree.getRoot());
       var compilation =
           new Compilation(binder.getDiagnostics(), new BoundGlobalScope(), boundExpression);
       if (compilation.getDiagnostics().hasErrors()) {

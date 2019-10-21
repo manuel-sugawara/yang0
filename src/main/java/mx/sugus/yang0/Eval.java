@@ -56,7 +56,8 @@ public class Eval {
 
   private Object evalAssignmentExpression(BoundAssignmentExpression expr) {
     var value = evalExpression(expr.getInitializer());
-    compilation.getScope().setValue(expr.getSymbol(), value);
+    var scope = compilation.getScope();
+    scope.setValue(expr.getSymbol(), value);
     return value;
   }
 

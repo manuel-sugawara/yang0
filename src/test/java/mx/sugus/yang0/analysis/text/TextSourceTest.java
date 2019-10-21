@@ -1,13 +1,13 @@
 package mx.sugus.yang0.analysis.text;
 
-import static mx.sugus.yang0.Eval.eval;
 
 import java.util.stream.Collectors;
+import mx.sugus.yang0.Eval;
 import mx.sugus.yang0.analysis.Compilation;
 import mx.sugus.yang0.analysis.binding.Binder;
 import mx.sugus.yang0.analysis.binding.BoundGlobalScope;
 import mx.sugus.yang0.analysis.binding.BoundScope;
-import mx.sugus.yang0.analysis.syntax.Expression;
+import mx.sugus.yang0.analysis.syntax.ExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.Parser;
 import org.junit.Test;
 
@@ -56,7 +56,7 @@ public class TextSourceTest {
     var parser = new Parser("(a = 10) + (a = 20) + a");
     var tree = parser.parse();
     var binder = new Binder(new BoundScope(), parser.getDiagnostics());
-    var boundExpression = binder.bindExpression((Expression) tree.getRoot());
+    var boundExpression = binder.bindExpression((ExpressionSyntax) tree.getRoot());
     var compilation =
         new Compilation(binder.getDiagnostics(), new BoundGlobalScope(), boundExpression);
     if (compilation.getDiagnostics().hasErrors()) {
@@ -66,7 +66,7 @@ public class TextSourceTest {
               .map(Object::toString)
               .collect(Collectors.joining("\n")));
     } else {
-      System.out.println("Result: " + eval(compilation));
+      System.out.println("Result: " + new Eval(compilation).eval());
     }
   }
 }

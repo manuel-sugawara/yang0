@@ -1,12 +1,12 @@
 package mx.sugus.yang0.analysis.binding;
 
-import mx.sugus.yang0.analysis.syntax.LiteralExpression;
+import mx.sugus.yang0.analysis.syntax.LiteralExpressionSyntax;
 
 public class BoundLiteralExpression implements BoundExpression {
 
-  private final LiteralExpression literal;
+  private final LiteralExpressionSyntax literal;
 
-  public BoundLiteralExpression(LiteralExpression literal) {
+  public BoundLiteralExpression(LiteralExpressionSyntax literal) {
     this.literal = literal;
   }
 

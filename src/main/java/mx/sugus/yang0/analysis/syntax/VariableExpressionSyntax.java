@@ -1,10 +1,10 @@
 package mx.sugus.yang0.analysis.syntax;
 
-public class VariableExpression implements Expression {
+public class VariableExpressionSyntax implements ExpressionSyntax {
 
   private final SyntaxToken identifier;
 
-  public VariableExpression(SyntaxToken identifier) {
+  public VariableExpressionSyntax(SyntaxToken identifier) {
     this.identifier = identifier;
   }
 

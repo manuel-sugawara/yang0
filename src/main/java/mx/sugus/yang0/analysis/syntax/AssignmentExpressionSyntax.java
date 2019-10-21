@@ -1,12 +1,12 @@
 package mx.sugus.yang0.analysis.syntax;
 
-public class AssignmentExpression implements Expression {
+public class AssignmentExpressionSyntax implements ExpressionSyntax {
 
   private final SyntaxToken identifier;
   private final SyntaxToken operator;
-  private final Expression initializer;
+  private final ExpressionSyntax initializer;
 
-  public AssignmentExpression(SyntaxToken identifier, SyntaxToken operator, Expression initializer) {
+  public AssignmentExpressionSyntax(SyntaxToken identifier, SyntaxToken operator, ExpressionSyntax initializer) {
     this.identifier = identifier;
     this.operator = operator;
     this.initializer = initializer;
@@ -20,7 +20,7 @@ public class AssignmentExpression implements Expression {
     return operator;
   }
 
-  public Expression getInitializer() {
+  public ExpressionSyntax getInitializer() {
     return initializer;
   }
 

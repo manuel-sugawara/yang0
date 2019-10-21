@@ -35,34 +35,34 @@ public class Parser {
   }
 
   public SyntaxTree parse() {
-    Expression expression = parseExpression();
+    ExpressionSyntax expression = parseExpression();
     SyntaxToken token = expect(SyntaxKind.EofToken);
     return new SyntaxTree(diagnostics, expression, token);
   }
 
-  private Expression parseExpression() {
+  private ExpressionSyntax parseExpression() {
     return parseAssignmentExpression();
   }
 
-  private Expression parseAssignmentExpression() {
+  private ExpressionSyntax parseAssignmentExpression() {
     if (peek(0).getKind() == SyntaxKind.Identifier && peek(1).getKind() == SyntaxKind.EqualsToken) {
       var identifier = next();
       var operator = next();
       var expression = parseAssignmentExpression();
-      return new AssignmentExpression(identifier, operator, expression);
+      return new AssignmentExpressionSyntax(identifier, operator, expression);
     }
 
     return parseBinaryExpression(0);
   }
 
-  private Expression parseBinaryExpression(int parentPrecedence) {
+  private ExpressionSyntax parseBinaryExpression(int parentPrecedence) {
     var unaryOperatorPrecedence = getUnaryOperatorPriority(peek());
-    Expression left;
+    ExpressionSyntax left;
 
     if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence > parentPrecedence) {
       var operator = next();
       var operand = parsePrimary();
-      left = new UnaryExpression(operator, operand);
+      left = new UnaryExpressionSyntax(operator, operand);
     } else {
       left = parsePrimary();
     }
@@ -72,12 +72,12 @@ public class Parser {
       if (precedence == 0 || precedence <= parentPrecedence) {
         break;
       }
-      left = new BinaryExpression(left, next(), parseBinaryExpression(precedence));
+      left = new BinaryExpressionSyntax(left, next(), parseBinaryExpression(precedence));
     }
     return left;
   }
 
-  private Expression parsePrimary() {
+  private ExpressionSyntax parsePrimary() {
     var token = next();
     var kind = token.getKind();
 
@@ -85,16 +85,16 @@ public class Parser {
       case OpenParenToken:
         var expression = parseExpression();
         var end = expect(SyntaxKind.CloseParenToken);
-        return new ParentExpression(token, expression, end);
+        return new ParentExpressionSyntax(token, expression, end);
       case LongToken:
       case TrueKeyword:
       case FalseKeyword:
-        return new LiteralExpression(token);
+        return new LiteralExpressionSyntax(token);
       case Identifier:
-        return new VariableExpression(token);
+        return new VariableExpressionSyntax(token);
       default:
         diagnostics.reportExpectingPrimaryExpression(token.getPosition(), token);
-        return new ErrorExpression("primary", token);
+        return new ErrorExpressionSyntax("primary", token);
     }
   }
 

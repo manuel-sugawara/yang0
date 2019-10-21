@@ -1,12 +1,12 @@
 package mx.sugus.yang0.analysis.syntax;
 
-public class ParentExpression implements Expression {
+public class ParentExpressionSyntax implements ExpressionSyntax {
 
   private final SyntaxToken start;
-  private final Expression expression;
+  private final ExpressionSyntax expression;
   private final SyntaxToken end;
 
-  public ParentExpression(SyntaxToken start, Expression expression, SyntaxToken end) {
+  public ParentExpressionSyntax(SyntaxToken start, ExpressionSyntax expression, SyntaxToken end) {
     this.start = start;
     this.expression = expression;
     this.end = end;
@@ -20,7 +20,7 @@ public class ParentExpression implements Expression {
     return end;
   }
 
-  public Expression getExpression() {
+  public ExpressionSyntax getExpression() {
     return expression;
   }
 

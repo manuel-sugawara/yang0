@@ -1,10 +1,10 @@
 package mx.sugus.yang0.analysis.syntax;
 
-public class LiteralExpression implements Expression {
+public class LiteralExpressionSyntax implements ExpressionSyntax {
 
   private final SyntaxToken value;
 
-  public LiteralExpression(SyntaxToken value) {
+  public LiteralExpressionSyntax(SyntaxToken value) {
     this.value = value;
   }
 
