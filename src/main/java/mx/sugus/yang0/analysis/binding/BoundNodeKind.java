@@ -12,5 +12,5 @@ public enum BoundNodeKind {
   ExpressionStatement,
   BlockStatement,
   DeclareStatement,
-  IfStatement,
+  IfStatement, WhileStatement,
 }

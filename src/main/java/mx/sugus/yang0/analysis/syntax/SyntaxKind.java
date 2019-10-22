@@ -24,6 +24,7 @@ public enum SyntaxKind {
   BlockStatement,
   DeclareStatement,
   IfStatement,
+  WhileStatement,
 
   // Keywords
   TrueKeyword,
@@ -31,6 +32,7 @@ public enum SyntaxKind {
   VarKeyword,
   IfKeyword,
   ElseKeyword,
+  WhileKeyword,
 
   // Identifiers
   Identifier,

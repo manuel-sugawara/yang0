@@ -17,6 +17,7 @@ import mx.sugus.yang0.analysis.syntax.ParentExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.StatementSyntax;
 import mx.sugus.yang0.analysis.syntax.UnaryExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.VariableExpressionSyntax;
+import mx.sugus.yang0.analysis.syntax.WhileStatementSyntax;
 
 public class Binder {
 
@@ -47,9 +48,22 @@ public class Binder {
         return bindDeclareStatement((DeclareStatementSyntax) syntax);
       case IfStatement:
         return bindIfStatement((IfStatementSynax) syntax);
+      case WhileStatement:
+        return bindWhileStatement((WhileStatementSyntax) syntax);
       default:
         throw new IllegalStateException("unknown statement kind: " + kind);
     }
+  }
+
+  private BoundStatement bindWhileStatement(WhileStatementSyntax syntax) {
+    var condition =syntax.getCondition();
+    var boundCondition = bindExpression(condition);
+    if (boundCondition.getType() != Boolean.class) {
+      diagnostics.reportExpectingBooleanExpression(condition.getSpan(), boundCondition.getType());
+    }
+    var body = bindStatement(syntax.getBody());
+
+    return new BoundWhileStatement(syntax.getWhileToken(), boundCondition, body);
   }
 
   private BoundStatement bindIfStatement(IfStatementSynax syntax) {

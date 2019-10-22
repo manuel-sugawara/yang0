@@ -3,7 +3,6 @@ package mx.sugus.yang0.analysis.syntax;
 import static mx.sugus.yang0.analysis.syntax.SyntaxFacts.getBinaryOperatorPriority;
 import static mx.sugus.yang0.analysis.syntax.SyntaxFacts.getUnaryOperatorPriority;
 
-import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.List;
 import mx.sugus.yang0.analysis.text.TextSource;
@@ -51,6 +50,8 @@ public class Parser {
         return parseIfStatement();
       case VarKeyword:
         return parseDeclareStatement();
+      case WhileKeyword:
+        return parseWhileStatement();
       default:
         return parseExpressionStatement();
     }
@@ -66,6 +67,13 @@ public class Parser {
       return new IfStatementSynax(ifKeyword, condition, ifBody, elseKeyword, elseBody);
     }
     return new IfStatementSynax(ifKeyword, condition, ifBody);
+  }
+
+  private StatementSyntax parseWhileStatement() {
+    var whileKeyword = expect(SyntaxKind.WhileKeyword);
+    var condition = parseExpression();
+    var body = parseStatement();
+    return new WhileStatementSyntax(whileKeyword, condition, body);
   }
 
   private StatementSyntax parseBlockStatement() {

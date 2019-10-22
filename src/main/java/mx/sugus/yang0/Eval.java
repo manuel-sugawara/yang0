@@ -13,6 +13,7 @@ import mx.sugus.yang0.analysis.binding.BoundParentExpression;
 import mx.sugus.yang0.analysis.binding.BoundStatement;
 import mx.sugus.yang0.analysis.binding.BoundUnaryExpression;
 import mx.sugus.yang0.analysis.binding.BoundVariableExpression;
+import mx.sugus.yang0.analysis.binding.BoundWhileStatement;
 import mx.sugus.yang0.analysis.binding.EvalState;
 
 public class Eval {
@@ -41,9 +42,21 @@ public class Eval {
         return evalDeclareExpression((BoundDeclareStatement) node);
       case IfStatement:
         return evalIfStatement((BoundIfStatement) node);
+      case WhileStatement:
+        return evalWhileStatement((BoundWhileStatement) node);
       default:
         throw new IllegalStateException("unknown bound statement kind: " + kind);
     }
+  }
+
+  private Object evalWhileStatement(BoundWhileStatement node) {
+    var condition = node.getCondition();
+    var result = evalExpression(condition);
+    while (Boolean.TRUE.equals(result)) {
+      evalStatement(node.getBody());
+      result = evalExpression(condition);
+    }
+    return Boolean.FALSE;
   }
 
   private Object evalIfStatement(BoundIfStatement node) {
@@ -51,8 +64,11 @@ public class Eval {
     var object = evalExpression(condition);
     if (Boolean.TRUE.equals(object)) {
       return evalStatement(node.getBody());
+    } else if (node.getElseKeyword() != null) {
+      return evalStatement(node.getElseBody());
+    } else {
+      return Boolean.FALSE;
     }
-    return evalStatement(node.getElseBody());
   }
 
   private Object evalDeclareExpression(BoundDeclareStatement node) {
