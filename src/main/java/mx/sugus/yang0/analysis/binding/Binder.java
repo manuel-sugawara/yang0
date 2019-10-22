@@ -3,19 +3,24 @@ package mx.sugus.yang0.analysis.binding;
 import static mx.sugus.yang0.analysis.binding.BoundBinaryOperatorKind.bindBinaryOperatorKind;
 import static mx.sugus.yang0.analysis.binding.BoundUnaryOperatorKind.bindUnaryOperatorKind;
 
+import java.util.stream.Collectors;
 import mx.sugus.yang0.analysis.syntax.AssignmentExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.BinaryExpressionSyntax;
+import mx.sugus.yang0.analysis.syntax.BlockStatementSyntax;
+import mx.sugus.yang0.analysis.syntax.DeclareStatementSyntax;
 import mx.sugus.yang0.analysis.syntax.Diagnostics;
+import mx.sugus.yang0.analysis.syntax.ExpressionStatementSyntax;
 import mx.sugus.yang0.analysis.syntax.ExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.LiteralExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.ParentExpressionSyntax;
+import mx.sugus.yang0.analysis.syntax.StatementSyntax;
 import mx.sugus.yang0.analysis.syntax.UnaryExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.VariableExpressionSyntax;
 
 public class Binder {
 
   private final Diagnostics diagnostics;
-  private final BoundScope scope;
+  private BoundScope scope;
 
   public Binder(BoundScope scope, Diagnostics diagnostics) {
     this.scope = scope;
@@ -28,6 +33,45 @@ public class Binder {
 
   public BoundScope getScope() {
     return scope;
+  }
+
+  public BoundStatement bindStatement(StatementSyntax syntax) {
+    var kind = syntax.getKind();
+    switch (kind) {
+      case ExpressionStatement:
+        return bindExpressionStatement((ExpressionStatementSyntax) syntax);
+      case BlockStatement:
+        return bindBlockStatement((BlockStatementSyntax) syntax);
+      case DeclareStatement:
+        return bindDeclareStatement((DeclareStatementSyntax) syntax);
+      default:
+        throw new IllegalStateException("unknown statement kind: " + kind);
+    }
+  }
+
+  private BoundStatement bindDeclareStatement(DeclareStatementSyntax syntax) {
+    var variable = scope.getLocallyDeclared(syntax.getIdentifier());
+    var initExpression = bindExpression(syntax.getInitExpression());
+    if (variable != null) {
+      diagnostics.reportVariableAlreadyDeclared(syntax.getIdentifier());
+    } else {
+      variable = scope.declare(syntax.getIdentifier(), initExpression.getType());
+    }
+    return new BoundDeclareStatement(variable,
+        syntax.getVarKeyword(), syntax.getIdentifier(), syntax.getEqualsToken(), initExpression);
+  }
+
+  private BoundStatement bindBlockStatement(BlockStatementSyntax syntax) {
+    scope = scope.push();
+    var statements =
+        syntax.getStatements().stream().map(this::bindStatement).collect(Collectors.toList());
+    scope = scope.pop();
+    return new BoundBlockStatement(syntax.getStart(), syntax.getEnd(), statements);
+  }
+
+  private BoundStatement bindExpressionStatement(ExpressionStatementSyntax syntax) {
+    var expression = bindExpression(syntax.getExpression());
+    return new BoundExpressionStatement(expression);
   }
 
   public BoundExpression bindExpression(ExpressionSyntax syntax) {
@@ -62,14 +106,14 @@ public class Binder {
   private BoundExpression bindAssignmentExpression(AssignmentExpressionSyntax syntax) {
     var initializer = bindExpression(syntax.getInitializer());
     var variable = scope.getDeclared(syntax.getIdentifier());
-    if (variable != null) {
-      if (variable.getType() != initializer.getType()) {
-        diagnostics.reportCannotConvert(
-            syntax.getOperator(), variable.getType(), initializer.getType());
-        return initializer;
-      }
-    } else {
-      variable = scope.declare(syntax.getIdentifier(), initializer.getType());
+    if (variable == null) {
+      diagnostics.reportVariableNotFound(syntax.getIdentifier());
+      return initializer;
+    }
+    if (variable.getType() != initializer.getType()) {
+      diagnostics.reportCannotConvert(
+          syntax.getOperator(), variable.getType(), initializer.getType());
+      return initializer;
     }
     return new BoundAssignmentExpression(variable, syntax.getOperator(), initializer);
   }

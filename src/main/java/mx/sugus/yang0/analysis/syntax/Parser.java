@@ -35,9 +35,53 @@ public class Parser {
   }
 
   public SyntaxTree parse() {
-    ExpressionSyntax expression = parseExpression();
-    SyntaxToken token = expect(SyntaxKind.EofToken);
-    return new SyntaxTree(diagnostics, expression, token);
+    var statement = parseStatement();
+    var token = expect(SyntaxKind.EofToken);
+    return new SyntaxTree(diagnostics, statement, token);
+  }
+
+  private StatementSyntax parseStatement() {
+    var kind = peek().getKind();
+
+    switch (kind) {
+      case OpenBracketToken:
+        return parseBlockStatement();
+      case VarKeyword:
+        return parseDeclareStatement();
+      default:
+        return parseExpressionStatement();
+    }
+  }
+
+  private StatementSyntax parseBlockStatement() {
+    var start = next();
+    var statements = new ArrayList<StatementSyntax>();
+    loop:
+    while (true) {
+      var kind = peek().getKind();
+      switch (kind) {
+        case CloseBracketToken:
+        case EofToken:
+          break loop;
+        default:
+          statements.add(parseStatement());
+      }
+    }
+    var end = expect(SyntaxKind.CloseBracketToken);
+    return new BlockStatementSyntax(start, end, statements);
+  }
+
+  private StatementSyntax parseExpressionStatement() {
+    var expression = parseExpression();
+    return new ExpressionStatementSyntax(expression);
+  }
+
+  private StatementSyntax parseDeclareStatement() {
+    var varKeyword = next();
+    var identifier = expect(SyntaxKind.Identifier);
+    var assign = expect(SyntaxKind.EqualsToken);
+    var initValue = parseExpression();
+    return new DeclareStatementSyntax(varKeyword, identifier, assign, initValue);
   }
 
   private ExpressionSyntax parseExpression() {

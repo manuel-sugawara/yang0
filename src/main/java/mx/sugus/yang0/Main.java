@@ -6,11 +6,11 @@ import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 import mx.sugus.yang0.analysis.Compilation;
 import mx.sugus.yang0.analysis.binding.Binder;
-import mx.sugus.yang0.analysis.binding.BoundGlobalScope;
+import mx.sugus.yang0.analysis.binding.EvalState;
 import mx.sugus.yang0.analysis.binding.BoundScope;
 import mx.sugus.yang0.analysis.syntax.Diagnostics;
-import mx.sugus.yang0.analysis.syntax.ExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.Parser;
+import mx.sugus.yang0.analysis.syntax.StatementSyntax;
 
 /** Starting point for the Yang0 REPL */
 public class Main {
@@ -19,6 +19,7 @@ public class Main {
     var in = new BufferedReader(new InputStreamReader(System.in));
 
     var showTree = false;
+    var state = new EvalState();
     while (true) {
       System.out.print("> ");
       System.out.flush();
@@ -30,30 +31,38 @@ public class Main {
       if (line.equals("#showTree")) {
         showTree = !showTree;
         System.out.println("showTree " + showTree);
-        break;
+        continue;
       }
       var parser = new Parser(line);
       var tree = parser.parse();
       if (showTree) {
         System.out.println("Tree: " + tree.getRoot());
-        break;
+        continue;
       }
       if (parser.getDiagnostics().hasErrors()) {
         reportErrors(parser.getDiagnostics());
-        break;
+        continue;
       }
-      var binder = new Binder(new BoundScope(), parser.getDiagnostics());
-      var boundExpression = binder.bindExpression((ExpressionSyntax) tree.getRoot());
+      var binder = new Binder(getScope(state), parser.getDiagnostics());
+      var boundStatement = binder.bindStatement((StatementSyntax) tree.getRoot());
       var compilation =
-          new Compilation(binder.getDiagnostics(), new BoundGlobalScope(), boundExpression);
+          new Compilation(binder.getDiagnostics(), state, boundStatement);
       if (compilation.getDiagnostics().hasErrors()) {
         reportErrors(compilation.getDiagnostics());
-        break;
+        continue;
       } else {
         var evaluator = new Eval(compilation);
         System.out.println("Result: " + evaluator.eval());
       }
     }
+  }
+
+  public static BoundScope getScope(EvalState state) {
+    var scope = new BoundScope();
+    for (var symbol : state.getSymbols()) {
+      scope.declareSymbol(symbol);
+    }
+    return scope;
   }
 
   public static void reportErrors(Diagnostics diagnostics) {

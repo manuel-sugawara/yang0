@@ -1,29 +1,29 @@
 package mx.sugus.yang0.analysis;
 
-import mx.sugus.yang0.analysis.binding.BoundExpression;
-import mx.sugus.yang0.analysis.binding.BoundGlobalScope;
+import mx.sugus.yang0.analysis.binding.EvalState;
+import mx.sugus.yang0.analysis.binding.BoundStatement;
 import mx.sugus.yang0.analysis.syntax.Diagnostics;
 
 public class Compilation {
   private final Diagnostics diagnostics;
-  private final BoundGlobalScope scope;
-  private final BoundExpression expression;
+  private final EvalState scope;
+  private final BoundStatement statement;
 
-  public Compilation(Diagnostics diagnostics, BoundGlobalScope scope, BoundExpression expression) {
+  public Compilation(Diagnostics diagnostics, EvalState scope, BoundStatement statement) {
     this.diagnostics = diagnostics;
     this.scope = scope;
-    this.expression = expression;
+    this.statement = statement;
   }
 
   public Diagnostics getDiagnostics() {
     return diagnostics;
   }
 
-  public BoundExpression getExpression() {
-    return expression;
+  public BoundStatement getStatement() {
+    return statement;
   }
 
-  public BoundGlobalScope getScope() {
+  public EvalState getScope() {
     return scope;
   }
 }

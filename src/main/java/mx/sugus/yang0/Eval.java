@@ -3,25 +3,67 @@ package mx.sugus.yang0;
 import mx.sugus.yang0.analysis.Compilation;
 import mx.sugus.yang0.analysis.binding.BoundAssignmentExpression;
 import mx.sugus.yang0.analysis.binding.BoundBinaryExpression;
+import mx.sugus.yang0.analysis.binding.BoundBlockStatement;
+import mx.sugus.yang0.analysis.binding.BoundDeclareStatement;
 import mx.sugus.yang0.analysis.binding.BoundExpression;
+import mx.sugus.yang0.analysis.binding.BoundExpressionStatement;
 import mx.sugus.yang0.analysis.binding.BoundLiteralExpression;
 import mx.sugus.yang0.analysis.binding.BoundParentExpression;
+import mx.sugus.yang0.analysis.binding.BoundStatement;
 import mx.sugus.yang0.analysis.binding.BoundUnaryExpression;
 import mx.sugus.yang0.analysis.binding.BoundVariableExpression;
+import mx.sugus.yang0.analysis.binding.EvalState;
 
 public class Eval {
 
   private final Compilation compilation;
+  private EvalState state;
 
   public Eval(Compilation compilation) {
     this.compilation = compilation;
+    this.state = compilation.getScope();
   }
 
   public Object eval() {
-    return evalExpression(compilation.getExpression());
+    return evalStatement(compilation.getStatement());
   }
 
-  public Object evalExpression(BoundExpression node) {
+  private Object evalStatement(BoundStatement node) {
+    var kind = node.getKind();
+
+    switch (kind) {
+      case ExpressionStatement:
+        return evalExpressionStatement((BoundExpressionStatement) node);
+      case BlockStatement:
+        return evalBlockStatement((BoundBlockStatement) node);
+      case DeclareStatement:
+        return evalDeclareExpression((BoundDeclareStatement) node);
+      default:
+        throw new IllegalStateException("unknown bound statement kind: " + kind);
+    }
+  }
+
+  private Object evalDeclareExpression(BoundDeclareStatement node) {
+    var value = evalExpression(node.getInitExpression());
+    state.declare(node.getSymbol(), value);
+    return value;
+  }
+
+  private Object evalExpressionStatement(BoundExpressionStatement node) {
+    return evalExpression(node.getExpression());
+  }
+
+  private Object evalBlockStatement(BoundBlockStatement node) {
+    Object value = null;
+    state = state.push();
+    for (BoundStatement statement : node.getStatements()) {
+      value = evalStatement(statement);
+    }
+    state = state.pop();
+    return value;
+  }
+
+  private Object evalExpression(BoundExpression node) {
     var kind = node.getKind();
     switch (kind) {
       case LiteralExpression:
@@ -50,14 +92,12 @@ public class Eval {
   }
 
   private Object evalVariableExpression(BoundVariableExpression expr) {
-    var scope = compilation.getScope();
-    return scope.getValue(expr.getSymbol());
+    return state.getValue(expr.getSymbol());
   }
 
   private Object evalAssignmentExpression(BoundAssignmentExpression expr) {
     var value = evalExpression(expr.getInitializer());
-    var scope = compilation.getScope();
-    scope.setValue(expr.getSymbol(), value);
+    state.setValue(expr.getSymbol(), value);
     return value;
   }
 

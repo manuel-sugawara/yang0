@@ -83,7 +83,15 @@ public class Diagnostics {
     addError(
         identifier.getPosition(),
         identifier.getSrc().length(),
-        "Variable with name '%s' was not found",
+        "Variable with name '%s' has not been declared",
+        identifier.getSrc());
+  }
+
+  public void reportVariableAlreadyDeclared(SyntaxToken identifier) {
+    addError(
+        identifier.getPosition(),
+        identifier.getSrc().length(),
+        "Variable with name '%s' has been already declared",
         identifier.getSrc());
   }
 

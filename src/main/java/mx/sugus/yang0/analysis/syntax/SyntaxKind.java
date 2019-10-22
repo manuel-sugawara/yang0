@@ -19,9 +19,17 @@ public enum SyntaxKind {
   AssignmentExpression,
   VariableExpression,
 
-  // Misc
+  // Statements
+  ExpressionStatement,
+  BlockStatement,
+  DeclareStatement,
+
+  // Keywords
   TrueKeyword,
   FalseKeyword,
+  VarKeyword,
+
+  // Identifiers
   Identifier,
 
   // Operators
@@ -35,6 +43,8 @@ public enum SyntaxKind {
   PercentToken,
   OpenParenToken,
   CloseParenToken,
+  OpenBracketToken,
+  CloseBracketToken,
   LessThanEqualsToken,
   LessThanToken,
   GraterThanEqualsToken,

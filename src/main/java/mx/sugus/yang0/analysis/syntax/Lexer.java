@@ -9,7 +9,6 @@ public class Lexer {
   private final Diagnostics diagnostics;
   private int position;
 
-
   public Lexer(TextSource source, Diagnostics diagnostics) {
     this.source = source;
     this.diagnostics = diagnostics;
@@ -67,6 +66,11 @@ public class Lexer {
         } else {
           return new SyntaxToken(SyntaxKind.GraterThanToken, start, ">");
         }
+      case '{':
+        return new SyntaxToken(SyntaxKind.OpenBracketToken, start, "(");
+
+      case '}':
+        return new SyntaxToken(SyntaxKind.CloseBracketToken, start, "(");
       case '(':
         return new SyntaxToken(SyntaxKind.OpenParenToken, start, "(");
       case ')':
@@ -116,6 +120,8 @@ public class Lexer {
         return new SyntaxToken(SyntaxKind.TrueKeyword, start, text, Boolean.TRUE);
       case "false":
         return new SyntaxToken(SyntaxKind.FalseKeyword, start, text, Boolean.FALSE);
+      case "var":
+        return new SyntaxToken(SyntaxKind.VarKeyword, start, text);
       default:
         return new SyntaxToken(SyntaxKind.Identifier, start, text);
     }
