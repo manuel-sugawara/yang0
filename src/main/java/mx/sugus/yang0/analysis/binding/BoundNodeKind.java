@@ -7,7 +7,10 @@ public enum BoundNodeKind {
   BinaryExpression,
   AssignmentExpression,
   VariableExpression,
+
+  // Statements
   ExpressionStatement,
   BlockStatement,
   DeclareStatement,
+  IfStatement,
 }

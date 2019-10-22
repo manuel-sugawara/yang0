@@ -1,12 +1,15 @@
 package mx.sugus.yang0.analysis.syntax;
 
+import mx.sugus.yang0.analysis.text.TextSpan;
+
 public class BinaryExpressionSyntax implements ExpressionSyntax {
 
   private final ExpressionSyntax left;
   private final SyntaxToken operator;
   private final ExpressionSyntax right;
 
-  public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operator, ExpressionSyntax right) {
+  public BinaryExpressionSyntax(
+      ExpressionSyntax left, SyntaxToken operator, ExpressionSyntax right) {
     this.left = left;
     this.operator = operator;
     this.right = right;
@@ -15,6 +18,11 @@ public class BinaryExpressionSyntax implements ExpressionSyntax {
   @Override
   public SyntaxKind getKind() {
     return SyntaxKind.BinaryExpression;
+  }
+
+  @Override
+  public TextSpan getSpan() {
+    return TextSpan.from(left.getSpan(), right.getSpan());
   }
 
   public ExpressionSyntax getLeft() {
@@ -28,6 +36,8 @@ public class BinaryExpressionSyntax implements ExpressionSyntax {
   public SyntaxToken getOperator() {
     return operator;
   }
+
+
 
   @Override
   public String toString() {

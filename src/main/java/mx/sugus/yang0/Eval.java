@@ -7,6 +7,7 @@ import mx.sugus.yang0.analysis.binding.BoundBlockStatement;
 import mx.sugus.yang0.analysis.binding.BoundDeclareStatement;
 import mx.sugus.yang0.analysis.binding.BoundExpression;
 import mx.sugus.yang0.analysis.binding.BoundExpressionStatement;
+import mx.sugus.yang0.analysis.binding.BoundIfStatement;
 import mx.sugus.yang0.analysis.binding.BoundLiteralExpression;
 import mx.sugus.yang0.analysis.binding.BoundParentExpression;
 import mx.sugus.yang0.analysis.binding.BoundStatement;
@@ -38,9 +39,20 @@ public class Eval {
         return evalBlockStatement((BoundBlockStatement) node);
       case DeclareStatement:
         return evalDeclareExpression((BoundDeclareStatement) node);
+      case IfStatement:
+        return evalIfStatement((BoundIfStatement) node);
       default:
         throw new IllegalStateException("unknown bound statement kind: " + kind);
     }
+  }
+
+  private Object evalIfStatement(BoundIfStatement node) {
+    var condition = node.getCondition();
+    var object = evalExpression(condition);
+    if (Boolean.TRUE.equals(object)) {
+      return evalStatement(node.getBody());
+    }
+    return evalStatement(node.getElseBody());
   }
 
   private Object evalDeclareExpression(BoundDeclareStatement node) {

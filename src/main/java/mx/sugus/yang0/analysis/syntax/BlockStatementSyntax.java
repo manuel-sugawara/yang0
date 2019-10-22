@@ -1,6 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
 import java.util.List;
+import mx.sugus.yang0.analysis.text.TextSpan;
 
 public class BlockStatementSyntax implements StatementSyntax {
 
@@ -30,5 +31,10 @@ public class BlockStatementSyntax implements StatementSyntax {
   @Override
   public SyntaxKind getKind() {
     return SyntaxKind.BlockStatement;
+  }
+
+  @Override
+  public TextSpan getSpan() {
+    return TextSpan.from(start.getSpan(), end.getSpan());
   }
 }

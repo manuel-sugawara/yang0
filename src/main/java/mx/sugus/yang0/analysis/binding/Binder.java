@@ -11,6 +11,7 @@ import mx.sugus.yang0.analysis.syntax.DeclareStatementSyntax;
 import mx.sugus.yang0.analysis.syntax.Diagnostics;
 import mx.sugus.yang0.analysis.syntax.ExpressionStatementSyntax;
 import mx.sugus.yang0.analysis.syntax.ExpressionSyntax;
+import mx.sugus.yang0.analysis.syntax.IfStatementSynax;
 import mx.sugus.yang0.analysis.syntax.LiteralExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.ParentExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.StatementSyntax;
@@ -44,9 +45,26 @@ public class Binder {
         return bindBlockStatement((BlockStatementSyntax) syntax);
       case DeclareStatement:
         return bindDeclareStatement((DeclareStatementSyntax) syntax);
+      case IfStatement:
+        return bindIfStatement((IfStatementSynax) syntax);
       default:
         throw new IllegalStateException("unknown statement kind: " + kind);
     }
+  }
+
+  private BoundStatement bindIfStatement(IfStatementSynax syntax) {
+    var condition =syntax.getCondition();
+    var boundCondition = bindExpression(condition);
+    if (boundCondition.getType() != Boolean.class) {
+      diagnostics.reportExpectingBooleanExpression(condition.getSpan(), boundCondition.getType());
+    }
+    var ifBody = bindStatement(syntax.getBody());
+    if (syntax.getElseKeyword() != null) {
+      var elseBody = bindStatement(syntax.getElseBody());
+      return new BoundIfStatement(
+          syntax.getIfKeyword(), boundCondition, ifBody, syntax.getElseKeyword(), elseBody);
+    }
+    return new BoundIfStatement(syntax.getIfKeyword(), boundCondition, ifBody);
   }
 
   private BoundStatement bindDeclareStatement(DeclareStatementSyntax syntax) {
@@ -57,8 +75,12 @@ public class Binder {
     } else {
       variable = scope.declare(syntax.getIdentifier(), initExpression.getType());
     }
-    return new BoundDeclareStatement(variable,
-        syntax.getVarKeyword(), syntax.getIdentifier(), syntax.getEqualsToken(), initExpression);
+    return new BoundDeclareStatement(
+        variable,
+        syntax.getVarKeyword(),
+        syntax.getIdentifier(),
+        syntax.getEqualsToken(),
+        initExpression);
   }
 
   private BoundStatement bindBlockStatement(BlockStatementSyntax syntax) {

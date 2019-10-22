@@ -3,6 +3,7 @@ package mx.sugus.yang0.analysis.syntax;
 import static mx.sugus.yang0.analysis.syntax.SyntaxFacts.getBinaryOperatorPriority;
 import static mx.sugus.yang0.analysis.syntax.SyntaxFacts.getUnaryOperatorPriority;
 
+import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.List;
 import mx.sugus.yang0.analysis.text.TextSource;
@@ -46,6 +47,8 @@ public class Parser {
     switch (kind) {
       case OpenBracketToken:
         return parseBlockStatement();
+      case IfKeyword:
+        return parseIfStatement();
       case VarKeyword:
         return parseDeclareStatement();
       default:
@@ -53,8 +56,20 @@ public class Parser {
     }
   }
 
+  private StatementSyntax parseIfStatement() {
+    var ifKeyword = expect(SyntaxKind.IfKeyword);
+    var condition = parseExpression();
+    var ifBody = parseStatement();
+    if (peek().getKind() == SyntaxKind.ElseKeyword) {
+      var elseKeyword = next();
+      var elseBody = parseStatement();
+      return new IfStatementSynax(ifKeyword, condition, ifBody, elseKeyword, elseBody);
+    }
+    return new IfStatementSynax(ifKeyword, condition, ifBody);
+  }
+
   private StatementSyntax parseBlockStatement() {
-    var start = next();
+    var start = expect(SyntaxKind.OpenBracketToken);
     var statements = new ArrayList<StatementSyntax>();
     loop:
     while (true) {
@@ -137,7 +152,7 @@ public class Parser {
       case Identifier:
         return new VariableExpressionSyntax(token);
       default:
-        diagnostics.reportExpectingPrimaryExpression(token.getPosition(), token);
+        diagnostics.reportExpectingPrimaryExpression(token);
         return new ErrorExpressionSyntax("primary", token);
     }
   }
@@ -165,7 +180,7 @@ public class Parser {
   private SyntaxToken expect(SyntaxKind kind) {
     var token = next();
     if (token.getKind() != kind) {
-      diagnostics.reportUnexpectedToken(token.getPosition(), token, kind);
+      diagnostics.reportUnexpectedToken(token, kind);
       return new SyntaxToken(kind, -1, null);
     }
     return token;

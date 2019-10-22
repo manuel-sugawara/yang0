@@ -89,9 +89,10 @@ public class Lexer {
         }
     }
 
-    diagnostics.reportUnexpectedCharacter(start, source.charAt(start));
     var text = source.substring(start, position);
-    return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
+    var errorToken = new SyntaxToken(SyntaxKind.ErrorToken, start, text);
+    diagnostics.reportUnexpectedCharacter(errorToken.getSpan(), text);
+    return errorToken;
   }
 
   private SyntaxToken whitespace() {
@@ -107,8 +108,9 @@ public class Lexer {
       var value = Long.parseLong(text);
       return new SyntaxToken(SyntaxKind.LongToken, start, text, value);
     } catch (NumberFormatException e) {
-      diagnostics.reportInvalidNumber(start, text, Long.class);
-      return new SyntaxToken(SyntaxKind.ErrorToken, start, text);
+      var errorToken = new SyntaxToken(SyntaxKind.ErrorToken, start, text);
+      diagnostics.reportInvalidNumber(errorToken, Long.class);
+      return errorToken;
     }
   }
 
@@ -122,6 +124,10 @@ public class Lexer {
         return new SyntaxToken(SyntaxKind.FalseKeyword, start, text, Boolean.FALSE);
       case "var":
         return new SyntaxToken(SyntaxKind.VarKeyword, start, text);
+      case "if":
+        return new SyntaxToken(SyntaxKind.IfKeyword, start, text);
+      case "else":
+        return new SyntaxToken(SyntaxKind.ElseKeyword, start, text);
       default:
         return new SyntaxToken(SyntaxKind.Identifier, start, text);
     }

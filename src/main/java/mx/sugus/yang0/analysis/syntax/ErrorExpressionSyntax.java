@@ -1,5 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
+import mx.sugus.yang0.analysis.text.TextSpan;
+
 public class ErrorExpressionSyntax implements ExpressionSyntax {
 
   private final String expecting;
@@ -13,6 +15,11 @@ public class ErrorExpressionSyntax implements ExpressionSyntax {
   @Override
   public SyntaxKind getKind() {
     return SyntaxKind.ErrorToken;
+  }
+
+  @Override
+  public TextSpan getSpan() {
+    return got.getSpan();
   }
 
   @Override

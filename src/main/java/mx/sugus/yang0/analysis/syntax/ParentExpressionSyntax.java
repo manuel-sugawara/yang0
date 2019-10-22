@@ -1,5 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
+import mx.sugus.yang0.analysis.text.TextSpan;
+
 public class ParentExpressionSyntax implements ExpressionSyntax {
 
   private final SyntaxToken start;
@@ -27,6 +29,11 @@ public class ParentExpressionSyntax implements ExpressionSyntax {
   @Override
   public SyntaxKind getKind() {
     return SyntaxKind.ParentExpression;
+  }
+
+  @Override
+  public TextSpan getSpan() {
+    return TextSpan.from(start.getSpan(), end.getSpan());
   }
 
   @Override

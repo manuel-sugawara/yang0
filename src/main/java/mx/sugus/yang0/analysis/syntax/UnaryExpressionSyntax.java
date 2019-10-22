@@ -1,5 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
+import mx.sugus.yang0.analysis.text.TextSpan;
+
 public class UnaryExpressionSyntax implements ExpressionSyntax {
 
   private final SyntaxToken operator;
@@ -13,6 +15,11 @@ public class UnaryExpressionSyntax implements ExpressionSyntax {
   @Override
   public SyntaxKind getKind() {
     return SyntaxKind.UnaryExpression;
+  }
+
+  @Override
+  public TextSpan getSpan() {
+    return TextSpan.from(operator.getSpan(), operand.getSpan());
   }
 
   public SyntaxToken getOperator() {

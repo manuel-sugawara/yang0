@@ -1,5 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
+import mx.sugus.yang0.analysis.text.TextSpan;
+
 public class DeclareStatementSyntax implements StatementSyntax {
 
   private final SyntaxToken varKeyword;
@@ -36,5 +38,10 @@ public class DeclareStatementSyntax implements StatementSyntax {
   @Override
   public SyntaxKind getKind() {
     return SyntaxKind.DeclareStatement;
+  }
+
+  @Override
+  public TextSpan getSpan() {
+    return TextSpan.from(varKeyword.getSpan(), initExpression.getSpan());
   }
 }

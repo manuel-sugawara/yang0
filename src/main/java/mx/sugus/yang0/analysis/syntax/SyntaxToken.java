@@ -1,6 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
 import java.util.Objects;
+import mx.sugus.yang0.analysis.text.TextSpan;
 
 public class SyntaxToken {
 
@@ -41,6 +42,10 @@ public class SyntaxToken {
 
   public String toString() {
     return String.format("%s:%s [%s]", kind, position, src);
+  }
+
+  public TextSpan getSpan() {
+    return new TextSpan(position, src.length());
   }
 
   @Override

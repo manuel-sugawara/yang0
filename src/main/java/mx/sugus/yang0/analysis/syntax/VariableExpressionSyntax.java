@@ -1,5 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
+import mx.sugus.yang0.analysis.text.TextSpan;
+
 public class VariableExpressionSyntax implements ExpressionSyntax {
 
   private final SyntaxToken identifier;
@@ -15,6 +17,11 @@ public class VariableExpressionSyntax implements ExpressionSyntax {
   @Override
   public SyntaxKind getKind() {
     return SyntaxKind.VariableExpression;
+  }
+
+  @Override
+  public TextSpan getSpan() {
+    return identifier.getSpan();
   }
 
   @Override

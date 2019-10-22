@@ -1,5 +1,7 @@
 package mx.sugus.yang0.analysis.syntax;
 
+import mx.sugus.yang0.analysis.text.TextSpan;
+
 public class LiteralExpressionSyntax implements ExpressionSyntax {
 
   private final SyntaxToken value;
@@ -11,6 +13,11 @@ public class LiteralExpressionSyntax implements ExpressionSyntax {
   @Override
   public SyntaxKind getKind() {
     return SyntaxKind.LiteralExpression;
+  }
+
+  @Override
+  public TextSpan getSpan() {
+    return value.getSpan();
   }
 
   public Object getValue() {

@@ -23,11 +23,14 @@ public enum SyntaxKind {
   ExpressionStatement,
   BlockStatement,
   DeclareStatement,
+  IfStatement,
 
   // Keywords
   TrueKeyword,
   FalseKeyword,
   VarKeyword,
+  IfKeyword,
+  ElseKeyword,
 
   // Identifiers
   Identifier,
