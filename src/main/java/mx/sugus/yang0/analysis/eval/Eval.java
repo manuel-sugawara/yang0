@@ -1,4 +1,4 @@
-package mx.sugus.yang0;
+package mx.sugus.yang0.analysis.eval;
 
 import mx.sugus.yang0.analysis.Compilation;
 import mx.sugus.yang0.analysis.binding.BoundAssignmentExpression;
@@ -26,11 +26,11 @@ public class Eval {
     this.state = compilation.getScope();
   }
 
-  public Object eval() {
+  public Result eval() {
     return evalStatement(compilation.getStatement());
   }
 
-  private Object evalStatement(BoundStatement node) {
+  private Result evalStatement(BoundStatement node) {
     var kind = node.getKind();
 
     switch (kind) {
@@ -49,17 +49,17 @@ public class Eval {
     }
   }
 
-  private Object evalWhileStatement(BoundWhileStatement node) {
+  private Result evalWhileStatement(BoundWhileStatement node) {
     var condition = node.getCondition();
     var result = evalExpression(condition);
     while (Boolean.TRUE.equals(result)) {
       evalStatement(node.getBody());
       result = evalExpression(condition);
     }
-    return Boolean.FALSE;
+    return Result.False;
   }
 
-  private Object evalIfStatement(BoundIfStatement node) {
+  private Result evalIfStatement(BoundIfStatement node) {
     var condition = node.getCondition();
     var object = evalExpression(condition);
     if (Boolean.TRUE.equals(object)) {
@@ -67,22 +67,22 @@ public class Eval {
     } else if (node.getElseKeyword() != null) {
       return evalStatement(node.getElseBody());
     } else {
-      return Boolean.FALSE;
+      return Result.False;
     }
   }
 
-  private Object evalDeclareExpression(BoundDeclareStatement node) {
+  private Result evalDeclareExpression(BoundDeclareStatement node) {
     var value = evalExpression(node.getInitExpression());
     state.declare(node.getSymbol(), value);
     return value;
   }
 
-  private Object evalExpressionStatement(BoundExpressionStatement node) {
+  private Result evalExpressionStatement(BoundExpressionStatement node) {
     return evalExpression(node.getExpression());
   }
 
-  private Object evalBlockStatement(BoundBlockStatement node) {
-    Object value = null;
+  private Result evalBlockStatement(BoundBlockStatement node) {
+    Result value = null;
     state = state.push();
     for (BoundStatement statement : node.getStatements()) {
       value = evalStatement(statement);
@@ -91,7 +91,7 @@ public class Eval {
     return value;
   }
 
-  private Object evalExpression(BoundExpression node) {
+  private Result evalExpression(BoundExpression node) {
     var kind = node.getKind();
     switch (kind) {
       case LiteralExpression:
@@ -111,70 +111,70 @@ public class Eval {
     }
   }
 
-  private Object evalParentExpression(BoundParentExpression expr) {
+  private Result evalParentExpression(BoundParentExpression expr) {
     return evalExpression(expr.getExpression());
   }
 
-  private Object evalLiteralExpression(BoundLiteralExpression expr) {
-    return expr.getValue();
+  private Result evalLiteralExpression(BoundLiteralExpression expr) {
+    return Result.from(expr.getValue());
   }
 
-  private Object evalVariableExpression(BoundVariableExpression expr) {
-    return state.getValue(expr.getSymbol());
+  private Result evalVariableExpression(BoundVariableExpression expr) {
+    return Result.from(state.getValue(expr.getSymbol()));
   }
 
-  private Object evalAssignmentExpression(BoundAssignmentExpression expr) {
+  private Result evalAssignmentExpression(BoundAssignmentExpression expr) {
     var value = evalExpression(expr.getInitializer());
     state.setValue(expr.getSymbol(), value);
-    return value;
+    return Result.from(value);
   }
 
-  private Object evalUnaryExpression(BoundUnaryExpression expr) {
-    var operand = evalExpression(expr.getBoundOperand());
+  private Result evalUnaryExpression(BoundUnaryExpression expr) {
+    var operand = evalExpression(expr.getBoundOperand()).getValue();
     switch (expr.getOperatorKind()) {
       case Identity:
-        return operand;
+        return Result.from(operand);
       case Negation:
-        return -(long) operand;
+        return Result.from(-(long) operand);
       case LogicalNot:
-        return !(boolean) operand;
+        return Result.from(!(boolean) operand);
       default:
         throw new IllegalStateException(
             "unexpected unary operator kind: " + expr.getOperatorKind());
     }
   }
 
-  private Object evalBinaryExpression(BoundBinaryExpression expr) {
-    var left = evalExpression(expr.getLeft());
+  private Result evalBinaryExpression(BoundBinaryExpression expr) {
+    var left = evalExpression(expr.getLeft()).getValue();
     switch (expr.getOperatorKind()) {
       case Addition:
-        return (long) left + (long) evalExpression(expr.getRight());
+        return Result.from((long) left + (long) evalExpression(expr.getRight()).getValue());
       case Subtraction:
-        return (long) left - (long) evalExpression(expr.getRight());
+        return Result.from((long) left - (long) evalExpression(expr.getRight()).getValue());
       case Multiplication:
-        return (long) left * (long) evalExpression(expr.getRight());
+        return Result.from((long) left * (long) evalExpression(expr.getRight()).getValue());
       case Division:
-        return (long) left / (long) evalExpression(expr.getRight());
+        return Result.from((long) left / (long) evalExpression(expr.getRight()).getValue());
       case Modulo:
-        return (long) left % (long) evalExpression(expr.getRight());
+        return Result.from((long) left % (long) evalExpression(expr.getRight()).getValue());
       case LongEquality:
       case BooleanEquality:
-        return left.equals(evalExpression(expr.getRight()));
+        return Result.from(left.equals(evalExpression(expr.getRight())));
       case BooleanNonEquality:
       case LongNonEquality:
-        return !left.equals(evalExpression(expr.getRight()));
+        return Result.from(!left.equals(evalExpression(expr.getRight())));
       case RelationalLessThan:
-        return (long) left < (long) evalExpression(expr.getRight());
+        return Result.from((long) left < (long) evalExpression(expr.getRight()).getValue());
       case RelationalLessThanEquals:
-        return (long) left <= (long) evalExpression(expr.getRight());
+        return Result.from((long) left <= (long) evalExpression(expr.getRight()).getValue());
       case RelationalGraterThan:
-        return (long) left > (long) evalExpression(expr.getRight());
+        return Result.from((long) left > (long) evalExpression(expr.getRight()).getValue());
       case RelationalGraterThanEquals:
-        return (long) left >= (long) evalExpression(expr.getRight());
+        return Result.from((long) left >= (long) evalExpression(expr.getRight()).getValue());
       case LogicalAnd:
-        return (boolean) left && (boolean) evalExpression(expr.getRight());
+        return Result.from((boolean) left && (boolean) evalExpression(expr.getRight()).getValue());
       case LogicalOr:
-        return (boolean) left || (boolean) evalExpression(expr.getRight());
+        return Result.from((boolean) left || (boolean) evalExpression(expr.getRight()).getValue());
       default:
         throw new IllegalStateException(
             "unexpected binary operator kind: " + expr.getOperatorKind());
