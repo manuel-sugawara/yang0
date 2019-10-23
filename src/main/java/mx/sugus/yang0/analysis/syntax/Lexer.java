@@ -130,6 +130,10 @@ public class Lexer {
         return new SyntaxToken(SyntaxKind.ElseKeyword, start, text);
       case "while":
         return new SyntaxToken(SyntaxKind.WhileKeyword, start, text);
+      case "break":
+        return new SyntaxToken(SyntaxKind.BreakKeyword, start, text);
+      case "continue":
+        return new SyntaxToken(SyntaxKind.ContinueKeyword, start, text);
       default:
         return new SyntaxToken(SyntaxKind.Identifier, start, text);
     }

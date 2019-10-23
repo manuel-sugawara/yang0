@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import mx.sugus.yang0.analysis.syntax.AssignmentExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.BinaryExpressionSyntax;
 import mx.sugus.yang0.analysis.syntax.BlockStatementSyntax;
+import mx.sugus.yang0.analysis.syntax.BreakStatementSyntax;
+import mx.sugus.yang0.analysis.syntax.ContinueStatementSyntax;
 import mx.sugus.yang0.analysis.syntax.DeclareStatementSyntax;
 import mx.sugus.yang0.analysis.syntax.Diagnostics;
 import mx.sugus.yang0.analysis.syntax.ExpressionStatementSyntax;
@@ -50,9 +52,21 @@ public class Binder {
         return bindIfStatement((IfStatementSynax) syntax);
       case WhileStatement:
         return bindWhileStatement((WhileStatementSyntax) syntax);
+      case BreakStatement:
+        return bindBreakStatement((BreakStatementSyntax) syntax);
+      case ContinueStatement:
+        return bindContinueStatement((ContinueStatementSyntax) syntax);
       default:
         throw new IllegalStateException("unknown statement kind: " + kind);
     }
+  }
+
+  private BoundStatement bindBreakStatement(BreakStatementSyntax syntax) {
+    return new BoundBreakStatement(syntax.getBreakKeyword());
+  }
+
+  private BoundStatement bindContinueStatement(ContinueStatementSyntax syntax) {
+    return new BoundContinueStatement(syntax.getContinueKeyword());
   }
 
   private BoundStatement bindWhileStatement(WhileStatementSyntax syntax) {

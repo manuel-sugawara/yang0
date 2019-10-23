@@ -52,10 +52,25 @@ public class Parser {
         return parseDeclareStatement();
       case WhileKeyword:
         return parseWhileStatement();
+      case BreakKeyword:
+        return parseBreakStatement();
+      case ContinueKeyword:
+        return parseContinueStatement();
       default:
         return parseExpressionStatement();
     }
   }
+
+  private StatementSyntax parseBreakStatement() {
+    var keyword = expect(SyntaxKind.BreakKeyword);
+    return new BreakStatementSyntax(keyword);
+  }
+
+  private StatementSyntax parseContinueStatement() {
+    var keyword = expect(SyntaxKind.ContinueKeyword);
+    return new ContinueStatementSyntax(keyword);
+  }
+
 
   private StatementSyntax parseIfStatement() {
     var ifKeyword = expect(SyntaxKind.IfKeyword);

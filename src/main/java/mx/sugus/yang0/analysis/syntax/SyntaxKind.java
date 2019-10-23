@@ -25,6 +25,8 @@ public enum SyntaxKind {
   DeclareStatement,
   IfStatement,
   WhileStatement,
+  BreakStatement,
+  ContinueStatement,
 
   // Keywords
   TrueKeyword,
@@ -33,6 +35,8 @@ public enum SyntaxKind {
   IfKeyword,
   ElseKeyword,
   WhileKeyword,
+  BreakKeyword,
+  ContinueKeyword,
 
   // Identifiers
   Identifier,

@@ -1,6 +1,6 @@
 package mx.sugus.yang0.analysis;
 
-import mx.sugus.yang0.analysis.binding.EvalState;
+import mx.sugus.yang0.analysis.eval.EvalState;
 import mx.sugus.yang0.analysis.binding.BoundStatement;
 import mx.sugus.yang0.analysis.syntax.Diagnostics;
 

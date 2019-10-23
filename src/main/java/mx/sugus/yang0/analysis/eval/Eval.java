@@ -4,6 +4,8 @@ import mx.sugus.yang0.analysis.Compilation;
 import mx.sugus.yang0.analysis.binding.BoundAssignmentExpression;
 import mx.sugus.yang0.analysis.binding.BoundBinaryExpression;
 import mx.sugus.yang0.analysis.binding.BoundBlockStatement;
+import mx.sugus.yang0.analysis.binding.BoundBreakStatement;
+import mx.sugus.yang0.analysis.binding.BoundContinueStatement;
 import mx.sugus.yang0.analysis.binding.BoundDeclareStatement;
 import mx.sugus.yang0.analysis.binding.BoundExpression;
 import mx.sugus.yang0.analysis.binding.BoundExpressionStatement;
@@ -14,7 +16,6 @@ import mx.sugus.yang0.analysis.binding.BoundStatement;
 import mx.sugus.yang0.analysis.binding.BoundUnaryExpression;
 import mx.sugus.yang0.analysis.binding.BoundVariableExpression;
 import mx.sugus.yang0.analysis.binding.BoundWhileStatement;
-import mx.sugus.yang0.analysis.binding.EvalState;
 
 public class Eval {
 
@@ -32,7 +33,6 @@ public class Eval {
 
   private Result evalStatement(BoundStatement node) {
     var kind = node.getKind();
-
     switch (kind) {
       case ExpressionStatement:
         return evalExpressionStatement((BoundExpressionStatement) node);
@@ -44,25 +44,49 @@ public class Eval {
         return evalIfStatement((BoundIfStatement) node);
       case WhileStatement:
         return evalWhileStatement((BoundWhileStatement) node);
+      case BreakStatement:
+        return evalBreakStatement((BoundBreakStatement) node);
+      case ContinueStatement:
+        return evalContinueStatement((BoundContinueStatement) node);
       default:
         throw new IllegalStateException("unknown bound statement kind: " + kind);
     }
   }
 
+  private Result evalContinueStatement(BoundContinueStatement node) {
+    return Result.Continue;
+  }
+
+  private Result evalBreakStatement(BoundBreakStatement node) {
+    return Result.Break;
+  }
+
   private Result evalWhileStatement(BoundWhileStatement node) {
     var condition = node.getCondition();
-    var result = evalExpression(condition);
-    while (Boolean.TRUE.equals(result)) {
-      evalStatement(node.getBody());
-      result = evalExpression(condition);
+    var conditionResult = evalExpression(condition);
+    var result = Result.None;
+    while (Boolean.TRUE.equals(conditionResult.getValue())) {
+      result = evalStatement(node.getBody());
+      conditionResult = evalExpression(condition);
+
+      System.out.printf(
+          "result: %s,%s; condition: %s, %s\n",
+          result.getValue(),
+          result.getState(),
+          conditionResult.getValue(),
+          conditionResult.getState());
+
+      if (result == Result.Break) {
+        break;
+      }
     }
-    return Result.False;
+    return result;
   }
 
   private Result evalIfStatement(BoundIfStatement node) {
     var condition = node.getCondition();
-    var object = evalExpression(condition);
-    if (Boolean.TRUE.equals(object)) {
+    var result = evalExpression(condition);
+    if (Boolean.TRUE.equals(result.getValue())) {
       return evalStatement(node.getBody());
     } else if (node.getElseKeyword() != null) {
       return evalStatement(node.getElseBody());
@@ -72,9 +96,9 @@ public class Eval {
   }
 
   private Result evalDeclareExpression(BoundDeclareStatement node) {
-    var value = evalExpression(node.getInitExpression());
-    state.declare(node.getSymbol(), value);
-    return value;
+    var result = evalExpression(node.getInitExpression());
+    state.declare(node.getSymbol(), result.getValue());
+    return result;
   }
 
   private Result evalExpressionStatement(BoundExpressionStatement node) {
@@ -82,13 +106,16 @@ public class Eval {
   }
 
   private Result evalBlockStatement(BoundBlockStatement node) {
-    Result value = null;
+    Result result = null;
     state = state.push();
     for (BoundStatement statement : node.getStatements()) {
-      value = evalStatement(statement);
+      result = evalStatement(statement);
+      if (result == Result.Continue || result == Result.Break) {
+        return result;
+      }
     }
     state = state.pop();
-    return value;
+    return result;
   }
 
   private Result evalExpression(BoundExpression node) {
@@ -124,9 +151,9 @@ public class Eval {
   }
 
   private Result evalAssignmentExpression(BoundAssignmentExpression expr) {
-    var value = evalExpression(expr.getInitializer());
-    state.setValue(expr.getSymbol(), value);
-    return Result.from(value);
+    var result = evalExpression(expr.getInitializer());
+    state.setValue(expr.getSymbol(), result.getValue());
+    return result;
   }
 
   private Result evalUnaryExpression(BoundUnaryExpression expr) {
@@ -180,4 +207,5 @@ public class Eval {
             "unexpected binary operator kind: " + expr.getOperatorKind());
     }
   }
+
 }

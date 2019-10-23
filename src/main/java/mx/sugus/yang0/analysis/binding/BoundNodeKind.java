@@ -1,6 +1,7 @@
 package mx.sugus.yang0.analysis.binding;
 
 public enum BoundNodeKind {
+  // Expressions
   LiteralExpression,
   ParentExpression,
   UnaryExpression,
@@ -12,5 +13,8 @@ public enum BoundNodeKind {
   ExpressionStatement,
   BlockStatement,
   DeclareStatement,
-  IfStatement, WhileStatement,
+  IfStatement,
+  WhileStatement,
+  BreakStatement,
+  ContinueStatement,
 }
