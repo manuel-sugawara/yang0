@@ -20,6 +20,10 @@ public class LiteralExpressionSyntax implements ExpressionSyntax {
     return value.getSpan();
   }
 
+  public SyntaxToken getValueToken() {
+    return value;
+  }
+
   public Object getValue() {
     return value.getValue();
   }

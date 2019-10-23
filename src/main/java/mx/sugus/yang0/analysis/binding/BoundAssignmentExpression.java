@@ -28,7 +28,7 @@ public class BoundAssignmentExpression implements BoundExpression {
   }
 
   @Override
-  public Class getType() {
+  public Type getType() {
     return symbol.getType();
   }
 

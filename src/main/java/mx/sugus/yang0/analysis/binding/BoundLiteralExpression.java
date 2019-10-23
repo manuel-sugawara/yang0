@@ -11,8 +11,16 @@ public class BoundLiteralExpression implements BoundExpression {
   }
 
   @Override
-  public Class getType() {
-    return literal.getValue().getClass();
+  public Type getType() {
+    switch (literal.getValueToken().getKind()) {
+      case TrueKeyword:
+      case FalseKeyword:
+        return Type.Boolean;
+      case LongToken:
+        return Type.Long;
+      default:
+        throw new IllegalStateException("unknown literal kind: " + literal.getKind());
+    }
   }
 
   @Override

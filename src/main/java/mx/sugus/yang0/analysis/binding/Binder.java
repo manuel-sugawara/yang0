@@ -58,7 +58,7 @@ public class Binder {
   private BoundStatement bindWhileStatement(WhileStatementSyntax syntax) {
     var condition =syntax.getCondition();
     var boundCondition = bindExpression(condition);
-    if (boundCondition.getType() != Boolean.class) {
+    if (boundCondition.getType() != Type.Boolean) {
       diagnostics.reportExpectingBooleanExpression(condition.getSpan(), boundCondition.getType());
     }
     var body = bindStatement(syntax.getBody());
@@ -69,7 +69,7 @@ public class Binder {
   private BoundStatement bindIfStatement(IfStatementSynax syntax) {
     var condition =syntax.getCondition();
     var boundCondition = bindExpression(condition);
-    if (boundCondition.getType() != Boolean.class) {
+    if (boundCondition.getType() != Type.Boolean) {
       diagnostics.reportExpectingBooleanExpression(condition.getSpan(), boundCondition.getType());
     }
     var ifBody = bindStatement(syntax.getBody());
@@ -134,7 +134,7 @@ public class Binder {
     var variable = scope.getDeclared(syntax.getIdentifier());
     if (variable == null) {
       diagnostics.reportVariableNotFound(syntax.getIdentifier());
-      variable = new VariableSymbol(syntax.getIdentifier(), Class.class);
+      variable = new VariableSymbol(syntax.getIdentifier(), Type.None);
     }
     return new BoundVariableExpression(variable);
   }

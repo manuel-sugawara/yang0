@@ -13,7 +13,7 @@ public class BoundVariableExpression implements BoundExpression {
   }
 
   @Override
-  public Class getType() {
+  public Type getType() {
     return symbol.getType();
   }
 

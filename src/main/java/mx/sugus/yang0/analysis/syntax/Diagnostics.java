@@ -2,6 +2,7 @@ package mx.sugus.yang0.analysis.syntax;
 
 import java.util.ArrayList;
 import java.util.List;
+import mx.sugus.yang0.analysis.binding.Type;
 import mx.sugus.yang0.analysis.text.TextSource;
 import mx.sugus.yang0.analysis.text.TextSpan;
 
@@ -38,12 +39,12 @@ public class Diagnostics {
     addError(token.getSpan(), "Unexpected input, got: '%s', expecting primary expression", token);
   }
 
-  public void reportUnaryOperatorNotFound(SyntaxToken token, Class type) {
+  public void reportUnaryOperatorNotFound(SyntaxToken token, Type type) {
     addError(
         token.getSpan(), "Cannot find unary operator '%s' for type '%s'", token.getSrc(), type);
   }
 
-  public void reportBinaryOperatorNotFound(SyntaxToken token, Class leftType, Class rightType) {
+  public void reportBinaryOperatorNotFound(SyntaxToken token, Type leftType, Type rightType) {
     addError(
         token.getSpan(),
         "Cannot find binary operator '%s' for types '%s' and '%s'",
@@ -52,7 +53,7 @@ public class Diagnostics {
         rightType);
   }
 
-  public void reportCannotConvert(SyntaxToken token, Class fromType, Class toType) {
+  public void reportCannotConvert(SyntaxToken token, Type fromType, Type toType) {
     addError(token.getSpan(), "Cannot convert type '%s' to '%s'", fromType, toType);
   }
 
@@ -73,7 +74,7 @@ public class Diagnostics {
         identifier.getSrc());
   }
 
-  public void reportExpectingBooleanExpression(TextSpan span, Class type) {
+  public void reportExpectingBooleanExpression(TextSpan span, Type type) {
     addError(span, "Expecting boolean expression, got expression of type: '%s'", type);
   }
 

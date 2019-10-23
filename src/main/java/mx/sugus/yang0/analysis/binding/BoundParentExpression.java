@@ -27,7 +27,7 @@ public class BoundParentExpression implements BoundExpression {
   }
 
   @Override
-  public Class getType() {
+  public Type getType() {
     return expression.getType();
   }
 

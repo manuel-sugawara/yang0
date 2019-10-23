@@ -4,21 +4,21 @@ import mx.sugus.yang0.analysis.syntax.SyntaxKind;
 import mx.sugus.yang0.analysis.syntax.SyntaxToken;
 
 public enum BoundUnaryOperatorKind {
-  Identity(SyntaxKind.PlusToken, Long.class, Long.class),
-  Negation(SyntaxKind.MinusToken, Long.class, Long.class),
-  LogicalNot(SyntaxKind.BangToken, Boolean.class, Boolean.class);
+  Identity(SyntaxKind.PlusToken, Type.Long, Type.Long),
+  Negation(SyntaxKind.MinusToken, Type.Long, Type.Long),
+  LogicalNot(SyntaxKind.BangToken, Type.Boolean, Type.Boolean);
 
   private final SyntaxKind syntaxKind;
-  private final Class type;
-  private final Class returnType;
+  private final Type type;
+  private final Type returnType;
 
-  BoundUnaryOperatorKind(SyntaxKind syntaxKind, Class type, Class returnType) {
+  BoundUnaryOperatorKind(SyntaxKind syntaxKind, Type type, Type returnType) {
     this.syntaxKind = syntaxKind;
     this.type = type;
     this.returnType = returnType;
   }
 
-  public static BoundUnaryOperatorKind bindUnaryOperatorKind(SyntaxToken token, Class type) {
+  public static BoundUnaryOperatorKind bindUnaryOperatorKind(SyntaxToken token, Type type) {
     for (var operatorKind : BoundUnaryOperatorKind.values()) {
       if (token.getKind() == operatorKind.getSyntaxKind() && type == operatorKind.getType()) {
         return operatorKind;
@@ -31,11 +31,11 @@ public enum BoundUnaryOperatorKind {
     return syntaxKind;
   }
 
-  public Class getType() {
+  public Type getType() {
     return type;
   }
 
-  public Class getReturnType() {
+  public Type getReturnType() {
     return returnType;
   }
 }

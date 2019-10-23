@@ -55,7 +55,7 @@ public class BoundScope {
     variables.put(symbol.getName().getSrc(), symbol);
   }
 
-  public VariableSymbol declare(SyntaxToken identifier, Class type) {
+  public VariableSymbol declare(SyntaxToken identifier, Type type) {
     var name = identifier.getSrc();
     var symbol = new VariableSymbol(identifier, type);
     variables.put(name, symbol);

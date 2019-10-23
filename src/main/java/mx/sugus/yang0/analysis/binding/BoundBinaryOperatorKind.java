@@ -4,33 +4,31 @@ import mx.sugus.yang0.analysis.syntax.SyntaxKind;
 import mx.sugus.yang0.analysis.syntax.SyntaxToken;
 
 public enum BoundBinaryOperatorKind {
-  Addition(SyntaxKind.PlusToken, Long.class, Long.class, Long.class),
-  Subtraction(SyntaxKind.MinusToken, Long.class, Long.class, Long.class),
-  Multiplication(SyntaxKind.StartToken, Long.class, Long.class, Long.class),
-  Division(SyntaxKind.SlashToken, Long.class, Long.class, Long.class),
-  Modulo(SyntaxKind.PercentToken, Long.class, Long.class, Long.class),
+  Addition(SyntaxKind.PlusToken, Type.Long, Type.Long, Type.Long),
+  Subtraction(SyntaxKind.MinusToken, Type.Long, Type.Long, Type.Long),
+  Multiplication(SyntaxKind.StartToken, Type.Long, Type.Long, Type.Long),
+  Division(SyntaxKind.SlashToken, Type.Long, Type.Long, Type.Long),
+  Modulo(SyntaxKind.PercentToken, Type.Long, Type.Long, Type.Long),
 
-  LongEquality(SyntaxKind.EqualsEqualsToken, Long.class, Long.class, Boolean.class),
-  LongNonEquality(SyntaxKind.BangEqualsToken, Long.class, Long.class, Boolean.class),
+  LongEquality(SyntaxKind.EqualsEqualsToken, Type.Long, Type.Long, Type.Boolean),
+  LongNonEquality(SyntaxKind.BangEqualsToken, Type.Long, Type.Long, Type.Boolean),
 
-  BooleanEquality(SyntaxKind.EqualsEqualsToken, Boolean.class, Boolean.class, Boolean.class),
-  BooleanNonEquality(SyntaxKind.BangEqualsToken, Boolean.class, Boolean.class, Boolean.class),
+  BooleanEquality(SyntaxKind.EqualsEqualsToken, Type.Boolean, Type.Boolean, Type.Boolean),
+  BooleanNonEquality(SyntaxKind.BangEqualsToken, Type.Boolean, Type.Boolean, Type.Boolean),
 
-  RelationalLessThan(SyntaxKind.LessThanToken, Long.class, Long.class, Boolean.class),
-  RelationalLessThanEquals(SyntaxKind.LessThanEqualsToken, Long.class, Long.class, Boolean.class),
-  RelationalGraterThan(SyntaxKind.GraterThanToken, Long.class, Long.class, Boolean.class),
-  RelationalGraterThanEquals(
-      SyntaxKind.GraterThanEqualsToken, Long.class, Long.class, Boolean.class),
-  LogicalAnd(SyntaxKind.AmpersandAmpersandToken, Boolean.class, Boolean.class, Boolean.class),
-  LogicalOr(SyntaxKind.PipePipeToken, Boolean.class, Boolean.class, Boolean.class);
+  RelationalLessThan(SyntaxKind.LessThanToken, Type.Long, Type.Long, Type.Boolean),
+  RelationalLessThanEquals(SyntaxKind.LessThanEqualsToken, Type.Long, Type.Long, Type.Boolean),
+  RelationalGraterThan(SyntaxKind.GraterThanToken, Type.Long, Type.Long, Type.Boolean),
+  RelationalGraterThanEquals(SyntaxKind.GraterThanEqualsToken, Type.Long, Type.Long, Type.Boolean),
+  LogicalAnd(SyntaxKind.AmpersandAmpersandToken, Type.Boolean, Type.Boolean, Type.Boolean),
+  LogicalOr(SyntaxKind.PipePipeToken, Type.Boolean, Type.Boolean, Type.Boolean);
 
   private final SyntaxKind syntaxKind;
-  private final Class leftType;
-  private final Class rightType;
-  private final Class returnType;
+  private final Type leftType;
+  private final Type rightType;
+  private final Type returnType;
 
-  BoundBinaryOperatorKind(
-      SyntaxKind syntaxKind, Class leftType, Class rightType, Class returnType) {
+  BoundBinaryOperatorKind(SyntaxKind syntaxKind, Type leftType, Type rightType, Type returnType) {
     this.syntaxKind = syntaxKind;
     this.leftType = leftType;
     this.rightType = rightType;
@@ -38,7 +36,7 @@ public enum BoundBinaryOperatorKind {
   }
 
   public static BoundBinaryOperatorKind bindBinaryOperatorKind(
-      SyntaxToken token, Class leftType, Class rightType) {
+      SyntaxToken token, Type leftType, Type rightType) {
     for (var operatorKind : BoundBinaryOperatorKind.values()) {
       if (token.getKind() == operatorKind.getSyntaxKind()
           && leftType == operatorKind.getLeftType()
@@ -53,15 +51,15 @@ public enum BoundBinaryOperatorKind {
     return syntaxKind;
   }
 
-  public Class getLeftType() {
+  public Type getLeftType() {
     return leftType;
   }
 
-  public Class getRightType() {
+  public Type getRightType() {
     return rightType;
   }
 
-  public Class getReturnType() {
+  public Type getReturnType() {
     return returnType;
   }
 }

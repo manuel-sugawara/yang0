@@ -146,36 +146,35 @@ public class Eval {
 
   private Object evalBinaryExpression(BoundBinaryExpression expr) {
     var left = evalExpression(expr.getLeft());
-    var right = evalExpression(expr.getRight());
     switch (expr.getOperatorKind()) {
       case Addition:
-        return (long) left + (long) right;
+        return (long) left + (long) evalExpression(expr.getRight());
       case Subtraction:
-        return (long) left - (long) right;
+        return (long) left - (long) evalExpression(expr.getRight());
       case Multiplication:
-        return (long) left * (long) right;
+        return (long) left * (long) evalExpression(expr.getRight());
       case Division:
-        return (long) left / (long) right;
+        return (long) left / (long) evalExpression(expr.getRight());
       case Modulo:
-        return (long) left % (long) right;
+        return (long) left % (long) evalExpression(expr.getRight());
       case LongEquality:
       case BooleanEquality:
-        return left.equals(right);
+        return left.equals(evalExpression(expr.getRight()));
       case BooleanNonEquality:
       case LongNonEquality:
-        return !left.equals(right);
+        return !left.equals(evalExpression(expr.getRight()));
       case RelationalLessThan:
-        return (long) left < (long) right;
+        return (long) left < (long) evalExpression(expr.getRight());
       case RelationalLessThanEquals:
-        return (long) left <= (long) right;
+        return (long) left <= (long) evalExpression(expr.getRight());
       case RelationalGraterThan:
-        return (long) left > (long) right;
+        return (long) left > (long) evalExpression(expr.getRight());
       case RelationalGraterThanEquals:
-        return (long) left >= (long) right;
+        return (long) left >= (long) evalExpression(expr.getRight());
       case LogicalAnd:
-        return (boolean) left && (boolean) right;
+        return (boolean) left && (boolean) evalExpression(expr.getRight());
       case LogicalOr:
-        return (boolean) left || (boolean) right;
+        return (boolean) left || (boolean) evalExpression(expr.getRight());
       default:
         throw new IllegalStateException(
             "unexpected binary operator kind: " + expr.getOperatorKind());

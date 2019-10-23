@@ -6,9 +6,9 @@ import mx.sugus.yang0.analysis.syntax.SyntaxToken;
 public class VariableSymbol {
 
   private final SyntaxToken name;
-  private final Class type;
+  private final Type type;
 
-  public VariableSymbol(SyntaxToken name, Class type) {
+  public VariableSymbol(SyntaxToken name, Type type) {
     this.name = name;
     this.type = type;
   }
@@ -17,7 +17,7 @@ public class VariableSymbol {
     return name;
   }
 
-  public Class getType() {
+  public Type getType() {
     return type;
   }
 
@@ -30,8 +30,7 @@ public class VariableSymbol {
       return false;
     }
     VariableSymbol that = (VariableSymbol) o;
-    return Objects.equals(name, that.name) &&
-        Objects.equals(type, that.type);
+    return Objects.equals(name, that.name) && type == that.type;
   }
 
   @Override

@@ -24,7 +24,7 @@ public class BoundUnaryExpression implements BoundExpression {
   }
 
   @Override
-  public Class getType() {
+  public Type getType() {
     return operatorKind.getReturnType();
   }
 
