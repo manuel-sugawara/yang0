@@ -18,6 +18,8 @@ public class BoundLiteralExpression implements BoundExpression {
         return Type.Boolean;
       case LongToken:
         return Type.Long;
+      case StringLiteral:
+        return Type.String;
       default:
         throw new IllegalStateException("unknown literal kind: " + literal.getKind());
     }

@@ -2,6 +2,7 @@ package mx.sugus.yang0.analysis.syntax;
 
 import java.util.function.Predicate;
 import mx.sugus.yang0.analysis.text.TextSource;
+import mx.sugus.yang0.analysis.text.TextSpan;
 
 public class Lexer {
 
@@ -42,6 +43,8 @@ public class Lexer {
         return new SyntaxToken(SyntaxKind.SlashToken, start, "/");
       case '%':
         return new SyntaxToken(SyntaxKind.PercentToken, start, "%");
+      case '"':
+        return string();
       case '!':
         if (matchAndMove('=')) {
           return new SyntaxToken(SyntaxKind.BangEqualsToken, start, "!=");
@@ -93,6 +96,46 @@ public class Lexer {
     var errorToken = new SyntaxToken(SyntaxKind.ErrorToken, start, text);
     diagnostics.reportUnexpectedCharacter(errorToken.getSpan(), text);
     return errorToken;
+  }
+
+  private SyntaxToken string() {
+    var start = position - 1;
+    var done = false;
+    var buf = new StringBuilder();
+    while (!done) {
+      var ch = peekAndMove();
+      switch (ch) {
+        case 0:
+          diagnostics.reportUnterminatedStringLiteral(new TextSpan(start, buf.length()));
+          done = true;
+          break;
+        case '"':
+          done = true;
+          break;
+        case '\\':
+          buf.append(scanEscapeSequence());
+          break;
+        default:
+          buf.append(ch);
+          break;
+      }
+    }
+    var text = source.substring(start, position);
+    return new SyntaxToken(SyntaxKind.StringLiteral, start, text, buf.toString());
+  }
+
+  private char scanEscapeSequence() {
+    var ch = peekAndMove();
+    switch (ch) {
+      case 'n':
+        return '\n';
+      case 'r':
+        return '\r';
+      case 't':
+        return '\t';
+      default:
+        return ch;
+    }
   }
 
   private SyntaxToken whitespace() {

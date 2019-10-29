@@ -78,6 +78,10 @@ public class Diagnostics {
     addError(span, "Expecting boolean expression, got expression of type: '%s'", type);
   }
 
+  public void reportUnterminatedStringLiteral(TextSpan span) {
+    addError(span, "Unterminated literal String, reached EOF while looking for \"");
+  }
+
   static enum Level {
     Error,
     Warn

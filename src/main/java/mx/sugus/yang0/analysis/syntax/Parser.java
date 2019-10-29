@@ -169,6 +169,7 @@ public class Parser {
         var end = expect(SyntaxKind.CloseParenToken);
         return new ParentExpressionSyntax(token, expression, end);
       case LongToken:
+      case StringLiteral:
       case TrueKeyword:
       case FalseKeyword:
         return new LiteralExpressionSyntax(token);

@@ -10,6 +10,10 @@ public enum BoundBinaryOperatorKind {
   Division(SyntaxKind.SlashToken, Type.Long, Type.Long, Type.Long),
   Modulo(SyntaxKind.PercentToken, Type.Long, Type.Long, Type.Long),
 
+  StringConcatenation(SyntaxKind.PlusToken, Type.String, Type.String, Type.String),
+  StringLongConcatenation(SyntaxKind.PlusToken, Type.String, Type.Long, Type.String),
+  StringBoolConcatenation(SyntaxKind.PlusToken, Type.String, Type.Boolean, Type.String),
+
   LongEquality(SyntaxKind.EqualsEqualsToken, Type.Long, Type.Long, Type.Boolean),
   LongNonEquality(SyntaxKind.BangEqualsToken, Type.Long, Type.Long, Type.Boolean),
 

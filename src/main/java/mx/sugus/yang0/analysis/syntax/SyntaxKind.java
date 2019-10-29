@@ -10,6 +10,7 @@ public enum SyntaxKind {
 
   // Literals
   LongToken,
+  StringLiteral,
 
   // Syntax
   BinaryExpression,

@@ -184,6 +184,10 @@ public class Eval {
         return Result.from((long) left / (long) evalExpression(expr.getRight()).getValue());
       case Modulo:
         return Result.from((long) left % (long) evalExpression(expr.getRight()).getValue());
+      case StringConcatenation:
+      case StringBoolConcatenation:
+      case StringLongConcatenation:
+        return Result.from(left.toString() + evalExpression(expr.getRight()).getValue().toString());
       case LongEquality:
       case BooleanEquality:
         return Result.from(left.equals(evalExpression(expr.getRight())));
