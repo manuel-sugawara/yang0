@@ -43,6 +43,8 @@ public class Lexer {
         return new SyntaxToken(SyntaxKind.SlashToken, start, "/");
       case '%':
         return new SyntaxToken(SyntaxKind.PercentToken, start, "%");
+      case ',':
+        return new SyntaxToken(SyntaxKind.CommaToken, start, ",");
       case '"':
         return string();
       case '!':

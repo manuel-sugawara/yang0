@@ -52,7 +52,7 @@ public class BoundScope {
   }
 
   public void declareSymbol(VariableSymbol symbol) {
-    variables.put(symbol.getName().getSrc(), symbol);
+    variables.put(symbol.getName(), symbol);
   }
 
   public VariableSymbol declare(SyntaxToken identifier, Type type) {

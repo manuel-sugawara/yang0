@@ -174,11 +174,31 @@ public class Parser {
       case FalseKeyword:
         return new LiteralExpressionSyntax(token);
       case Identifier:
-        return new VariableExpressionSyntax(token);
+        if (peek().getKind() == SyntaxKind.OpenParenToken) {
+          return parseFunctionCall(token);
+        } else {
+          return new VariableExpressionSyntax(token);
+        }
       default:
         diagnostics.reportExpectingPrimaryExpression(token);
         return new ErrorExpressionSyntax("primary", token);
     }
+  }
+
+  private ExpressionSyntax parseFunctionCall(SyntaxToken identifier) {
+    var argumentsStart = expect(SyntaxKind.OpenParenToken);
+    var arguments = new ArrayList<ExpressionSyntax>();
+    if (peek().getKind() != SyntaxKind.CloseParenToken) {
+      while (true) {
+        arguments.add(parseExpression());
+        if (peek().getKind() != SyntaxKind.CommaToken) {
+          break;
+        }
+        next();
+      }
+    }
+    var argumentsEnd = expect(SyntaxKind.CloseParenToken);
+    return new FunctionCallExpressionSyntax(identifier, argumentsStart, arguments, argumentsEnd);
   }
 
   private SyntaxToken next() {

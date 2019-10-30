@@ -12,13 +12,14 @@ public enum SyntaxKind {
   LongToken,
   StringLiteral,
 
-  // Syntax
+  // Expressions
   BinaryExpression,
   ParentExpression,
   UnaryExpression,
   LiteralExpression,
   AssignmentExpression,
   VariableExpression,
+  FunctionCallExpression,
 
   // Statements
   ExpressionStatement,
@@ -62,4 +63,5 @@ public enum SyntaxKind {
   BangEqualsToken,
   EqualsEqualsToken,
   EqualsToken,
+  CommaToken,
 }

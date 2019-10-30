@@ -13,8 +13,8 @@ public class VariableSymbol {
     this.type = type;
   }
 
-  public SyntaxToken getName() {
-    return name;
+  public String getName() {
+    return name.getSrc();
   }
 
   public Type getType() {
